@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>macOS 进阶使用与开发者效率指南</title>
+<meta name="description" content="面向中阶用户与开发者的 macOS 详细使用 Tips：快捷键、窗口管理、Spotlight、终端、Homebrew、隐藏设置、调试技巧等">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0d1117;--panel:#161b22;--panel-2:#1c2128;--border:#30363d;
+    --text:#e6edf3;--muted:#7d8590;--accent:#58a6ff;--accent-2:#3fb950;
+    --warn:#d29922;--code-bg:#0a0e14;--kbd-bg:#21262d;--kbd-border:#444c56;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+  .layout{max-width:1100px;margin:0 auto;padding:32px 20px 80px;display:grid;grid-template-columns:240px 1fr;gap:36px}
+  @media (max-width:880px){.layout{grid-template-columns:1fr;padding:20px 16px 60px;gap:20px}.toc{position:static!important;max-height:none!important}}
+
+  /* Header */
+  header.hero{grid-column:1/-1;padding:32px 28px;background:linear-gradient(135deg,#161b22,#1c2128);border:1px solid var(--border);border-radius:16px;margin-bottom:8px}
+  header.hero h1{font-size:30px;font-weight:700;margin-bottom:10px;background:linear-gradient(90deg,#58a6ff,#3fb950);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header.hero .lead{color:var(--muted);font-size:15px;max-width:680px}
+  header.hero .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  header.hero .meta span{font-size:12px;padding:3px 10px;background:#1f6feb22;color:var(--accent);border-radius:10px}
+
+  /* TOC */
+  nav.toc{position:sticky;top:20px;align-self:start;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 16px;max-height:calc(100vh - 40px);overflow-y:auto}
+  nav.toc h3{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px}
+  nav.toc ol{list-style:none;counter-reset:tocnum}
+  nav.toc li{counter-increment:tocnum;margin:4px 0}
+  nav.toc li::before{content:counter(tocnum)".";color:var(--muted);font-size:12px;margin-right:6px}
+  nav.toc a{color:var(--text);text-decoration:none;font-size:13.5px;display:inline}
+  nav.toc a:hover{color:var(--accent)}
+
+  /* Main */
+  main{min-width:0}
+  section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-bottom:20px}
+  section h2{font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  section h2 .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#1f6feb22;color:var(--accent);border-radius:8px;font-size:14px;font-weight:600}
+  section .intro{color:var(--muted);font-size:14px;margin-bottom:18px}
+  section h3{font-size:16px;font-weight:600;margin:22px 0 10px;color:#c9d1d9;border-left:3px solid var(--accent);padding-left:10px}
+
+  /* Content */
+  p{margin:8px 0;color:#c9d1d9}
+  ul,ol.list{margin:6px 0 12px 22px;color:#c9d1d9}
+  li{margin:4px 0}
+  strong{color:#fff}
+  em{font-style:normal;color:var(--accent)}
+
+  /* Keyboard shortcut */
+  kbd{display:inline-block;padding:2px 7px;background:var(--kbd-bg);border:1px solid var(--kbd-border);border-bottom-width:2px;border-radius:5px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:#fff;margin:0 1px;line-height:1.4;white-space:nowrap}
+  .keys{display:inline-flex;align-items:center;gap:3px}
+  .keys span.plus{color:var(--muted);font-size:11px}
+
+  /* Table */
+  .tbl{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:13.5px}
+  .tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  .tbl th{background:var(--panel-2);color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  .tbl tr:hover td{background:var(--panel-2)}
+  .tbl td:first-child{white-space:nowrap;min-width:140px}
+
+  /* Code */
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;background:var(--code-bg);color:#79c0ff;padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:10px 0 16px;font-size:13px;line-height:1.55}
+  pre code{background:none;border:none;padding:0;color:#e6edf3;font-size:13px}
+  pre .c{color:#7d8590;font-style:italic}
+  pre .k{color:#ff7b72}
+  pre .s{color:#a5d6ff}
+  pre .v{color:#79c0ff}
+
+  /* Tip box */
+  .tip{margin:14px 0;padding:12px 14px;background:#1f6feb14;border-left:3px solid var(--accent);border-radius:6px;font-size:14px;color:#c9d1d9}
+  .tip strong{color:var(--accent)}
+  .warn{margin:14px 0;padding:12px 14px;background:#d2992214;border-left:3px solid var(--warn);border-radius:6px;font-size:14px}
+  .warn strong{color:var(--warn)}
+
+  /* Grid for tip cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:12px 0 16px}
+  .cards .card{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .cards .card .ct{font-weight:600;color:#fff;margin-bottom:4px;font-size:14px}
+  .cards .card .cd{color:var(--muted);font-size:13px}
+
+  footer{grid-column:1/-1;margin-top:20px;padding:20px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+  footer a{color:var(--accent);text-decoration:none}
+  a.back{display:inline-block;margin-top:10px;color:var(--accent);text-decoration:none;font-size:13px}
+  a.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<header class="hero">
+  <h1>macOS 进阶使用与开发者效率指南</h1>
+  <p class="lead">面向中阶用户 + 开发者的实战 Tips。覆盖快捷键、窗口管理、Spotlight、终端、Homebrew、隐藏设置、调试技巧等十余个主题，目标是显著提升日常使用效率。</p>
+  <div class="meta">
+    <span>macOS Sonoma / Sequoia</span><span>开发者向</span><span>中阶 → 高阶</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#shortcuts">必会快捷键</a></li>
+    <li><a href="#spotlight">Spotlight 进阶</a></li>
+    <li><a href="#window">窗口与桌面管理</a></li>
+    <li><a href="#screenshot">截图与录屏</a></li>
+    <li><a href="#finder">Finder 效率技巧</a></li>
+    <li><a href="#terminal">终端与 Shell</a></li>
+    <li><a href="#dev">开发环境配置</a></li>
+    <li><a href="#hidden">隐藏功能 defaults</a></li>
+    <li><a href="#clipboard">输入与剪贴板</a></li>
+    <li><a href="#system">系统维护</a></li>
+    <li><a href="#apps">推荐 App</a></li>
+    <li><a href="#network">网络与调试</a></li>
+    <li><a href="#ecosystem">Apple 生态联动</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="shortcuts">
+  <h2><span class="num">1</span>必会快捷键（按使用频率排序）</h2>
+  <p class="intro">先掌握下面这些，鼠标使用量能降到 30% 以下。粗体是 90% 用户没用过但极其高频的隐藏组合。</p>
+
+  <h3>系统级</h3>
+  <table class="tbl">
+    <tr><th>组合</th><th>作用</th></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>Space</kbd></span></td><td>Spotlight 搜索</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>Tab</kbd></span></td><td>App 切换（按住 ⌘ 不放，多按 Tab 选）</td></tr>
+    <tr><td><strong><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>`</kbd></span></strong></td><td><strong>同一 App 不同窗口之间切换</strong>（被严重低估）</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>Q</kbd></span></td><td>退出 App（区别于 ⌘W 关窗口）</td></tr>
+    <tr><td><strong><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⌥</kbd><span class="plus">+</span><kbd>Esc</kbd></span></strong></td><td><strong>强制退出菜单</strong>，等价于 Windows 任务管理器</td></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>←</kbd><span class="plus">/</span><kbd>→</kbd></span></td><td>切换桌面（Spaces）</td></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>↑</kbd></span></td><td>Mission Control（所有窗口）</td></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>↓</kbd></span></td><td>App Exposé（当前 App 所有窗口）</td></tr>
+  </table>
+
+  <h3>文本编辑（任何文本框都生效）</h3>
+  <p>macOS 在所有文本输入处都支持 Emacs 风格快捷键，写代码、写邮件、填表都通用：</p>
+  <table class="tbl">
+    <tr><th>组合</th><th>作用</th></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>A</kbd></span> / <span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>E</kbd></span></td><td>跳到行首 / 行尾</td></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>K</kbd></span></td><td>删除光标到行尾</td></tr>
+    <tr><td><span class="keys"><kbd>⌃</kbd><span class="plus">+</span><kbd>T</kbd></span></td><td>交换光标前后两个字符（修打字错位神技）</td></tr>
+    <tr><td><span class="keys"><kbd>⌥</kbd><span class="plus">+</span><kbd>←</kbd><span class="plus">/</span><kbd>→</kbd></span></td><td>按单词移动</td></tr>
+    <tr><td><span class="keys"><kbd>⌥</kbd><span class="plus">+</span><kbd>Delete</kbd></span></td><td>删一个单词</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>Delete</kbd></span></td><td>删一整行（光标前内容）</td></tr>
+    <tr><td><span class="keys"><kbd>fn</kbd><span class="plus">+</span><kbd>Delete</kbd></span></td><td>正向删除（Forward Delete）</td></tr>
+  </table>
+
+  <div class="tip"><strong>提示：</strong>这些 Emacs 快捷键在 Terminal、iTerm、VS Code 输入栏、浏览器地址栏、Slack、邮件里全部生效，肌肉记忆形成后效率提升非常明显。</div>
+
+  <h3>截图、录屏与系统</h3>
+  <table class="tbl">
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⇧</kbd><span class="plus">+</span><kbd>3</kbd></span></td><td>全屏截图</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⇧</kbd><span class="plus">+</span><kbd>4</kbd></span></td><td>区域截图（加 Space 切换为窗口截图）</td></tr>
+    <tr><td><strong><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⇧</kbd><span class="plus">+</span><kbd>5</kbd></span></strong></td><td><strong>截图/录屏面板</strong>（含定时、保存位置）</td></tr>
+    <tr><td>加 <kbd>⌃</kbd></td><td>截图存到剪贴板而不是文件</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>L</kbd></span></td><td>锁屏</td></tr>
+  </table>
+</section>
+
+<section id="spotlight">
+  <h2><span class="num">2</span>Spotlight 进阶用法</h2>
+  <p class="intro">Spotlight (<kbd>⌘</kbd>+<kbd>Space</kbd>) 不只是搜文件，它是一个万能命令面板。</p>
+
+  <div class="cards">
+    <div class="card"><div class="ct">单位换算</div><div class="cd">直接打 <code>100 usd to cny</code>、<code>30 km in mi</code></div></div>
+    <div class="card"><div class="ct">计算器</div><div class="cd">输入 <code>1024 * 768 / 60</code> 立即得结果</div></div>
+    <div class="card"><div class="ct">天气/股票</div><div class="cd"><code>weather tokyo</code>、<code>AAPL stock</code></div></div>
+    <div class="card"><div class="ct">日期计算</div><div class="cd"><code>3 weeks from today</code></div></div>
+    <div class="card"><div class="ct">App 启动器</div><div class="cd">打前 2-3 字母回车，比点 Launchpad 快 5 倍</div></div>
+    <div class="card"><div class="ct">系统设置直达</div><div class="cd">输入 "Display"、"Network" 跳转对应设置面板</div></div>
+  </div>
+
+  <div class="tip"><strong>建议：</strong>如果你重度使用键盘启动器，可以考虑 <strong>Raycast</strong> 或 <strong>Alfred</strong>，扩展能力远超 Spotlight（剪贴板历史、窗口管理、自定义脚本、Snippet 等）。Raycast 免费且现代化，推荐替换 Spotlight。</div>
+</section>
+
+<section id="window">
+  <h2><span class="num">3</span>窗口与桌面管理</h2>
+  <p class="intro">macOS Sonoma 之后内建窗口吸附（Window Tiling），Sequoia 进一步强化。</p>
+
+  <h3>原生窗口吸附（macOS Sequoia+）</h3>
+  <ul>
+    <li>拖动窗口到屏幕边缘，会出现吸附预览</li>
+    <li><kbd>⌃</kbd>+<kbd>fn</kbd>+方向键 = 移动到屏幕一半 / 角落</li>
+    <li><strong>Window 菜单 → Move & Resize</strong>，有完整选项菜单</li>
+  </ul>
+
+  <h3>Spaces（多桌面）</h3>
+  <ul>
+    <li><kbd>⌃</kbd>+<kbd>↑</kbd> 进入 Mission Control，顶部拖拽新建桌面</li>
+    <li>设置中关掉 "Automatically rearrange Spaces based on most recent use"，保持桌面顺序固定</li>
+    <li>给每个 Space 绑定不同壁纸，视觉上区分场景</li>
+    <li>右键 Dock 中的 App → Options → <strong>Assign to All Desktops / This Desktop</strong>，固定 App 在某桌面</li>
+  </ul>
+
+  <h3>第三方窗口管理（高阶）</h3>
+  <p>如果原生不够用，推荐其中之一：</p>
+  <ul>
+    <li><strong>Rectangle</strong>（开源免费）：<kbd>⌃</kbd>+<kbd>⌥</kbd>+方向键 = 左半、右半、最大化、四角等</li>
+    <li><strong>AeroSpace</strong>（开源）：i3 风格平铺式窗口管理器，键盘流首选</li>
+    <li><strong>Raycast Window Management</strong>：集成在 Raycast 内</li>
+  </ul>
+</section>
+
+<section id="screenshot">
+  <h2><span class="num">4</span>截图与录屏技巧</h2>
+
+  <h3>截图后的操作</h3>
+  <ul>
+    <li>截图完成右下角会显示 <strong>缩略图</strong>，点击可直接标注、裁剪、分享</li>
+    <li>拖动缩略图到 App / Finder，等于「不存到桌面，直接贴过去」</li>
+    <li>缩略图弹出期间右键，可改保存位置</li>
+  </ul>
+
+  <h3>截图面板设置（⌘⇧5）</h3>
+  <ul>
+    <li><strong>Options → Save to</strong>：默认改成专门文件夹，避免桌面爆炸</li>
+    <li><strong>Show Floating Thumbnail</strong>：关闭后截图直接落盘，不再弹缩略图</li>
+    <li><strong>Show Mouse Pointer</strong>：录屏时显示鼠标</li>
+  </ul>
+
+  <h3>修改默认截图位置与格式（命令行）</h3>
+<pre><code><span class="c"># 改保存位置</span>
+defaults write com.apple.screencapture location ~/Pictures/Screenshots
+killall SystemUIServer
+
+<span class="c"># 改格式 (png / jpg / pdf / tiff)</span>
+defaults write com.apple.screencapture type jpg
+
+<span class="c"># 截图文件名前缀</span>
+defaults write com.apple.screencapture name "shot"
+
+<span class="c"># 去掉截图阴影（窗口截图）</span>
+defaults write com.apple.screencapture disable-shadow -bool true
+killall SystemUIServer</code></pre>
+
+  <h3>系统录屏</h3>
+  <p><kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>5</kbd> → 选择 "Record Entire Screen" 或 "Record Selected Portion"。可同时录系统音 + 麦克风。</p>
+  <div class="tip"><strong>专业录屏推荐：</strong>免费用 <strong>OBS</strong>（多源混合）；快速 GIF 录制用 <strong>Kap</strong>（开源）或 <strong>Gifski</strong>。</div>
+</section>
+
+<section id="finder">
+  <h2><span class="num">5</span>Finder 效率技巧</h2>
+
+  <h3>必开设置</h3>
+  <ul>
+    <li><strong>Settings → Advanced → Show all filename extensions</strong>：显示后缀</li>
+    <li><strong>Show Path Bar / Status Bar</strong>：底部显示完整路径与剩余空间（菜单 View 中开启）</li>
+    <li><strong>Show Library Folder</strong>：在 Home 文件夹按 <kbd>⌘</kbd>+<kbd>J</kbd>，勾选显示 <code>~/Library</code></li>
+    <li>关闭 <strong>iCloud Desktop</strong>（如果你不需要桌面同步）</li>
+  </ul>
+
+  <h3>键盘操作</h3>
+  <table class="tbl">
+    <tr><td><span class="keys"><kbd>Space</kbd></span></td><td><strong>Quick Look</strong>：预览任何文件，无需打开 App</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>↓</kbd></span></td><td>打开文件夹 / 文件</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>↑</kbd></span></td><td>返回上一级</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⇧</kbd><span class="plus">+</span><kbd>G</kbd></span></td><td>跳转到路径（支持粘贴）</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⇧</kbd><span class="plus">+</span><kbd>.</kbd></span></td><td>显示/隐藏隐藏文件</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>I</kbd></span></td><td>查看详细信息 (Get Info)</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⌥</kbd><span class="plus">+</span><kbd>V</kbd></span></td><td><strong>剪切粘贴</strong>（先 ⌘C，再到目标按这个）</td></tr>
+    <tr><td><span class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>⌥</kbd><span class="plus">+</span><kbd>P</kbd></span></td><td>切换 Path Bar</td></tr>
+  </table>
+
+  <h3>Quick Look 增强</h3>
+  <p>装这些 QL 插件让 Space 预览能识别更多格式：</p>
+<pre><code>brew install --cask qlmarkdown qlstephen quicklook-json
+brew install --cask qlcolorcode qlimagesize</code></pre>
+  <ul>
+    <li><code>qlmarkdown</code>：渲染 Markdown</li>
+    <li><code>qlstephen</code>：预览没有后缀的文本文件 (README, Makefile)</li>
+    <li><code>qlcolorcode</code>：代码语法高亮</li>
+  </ul>
+
+  <h3>Smart Folders（智能文件夹）</h3>
+  <p>File → New Smart Folder，可以保存搜索条件，比如"过去 7 天修改的 PDF"作为虚拟文件夹。</p>
+</section>
+
+<section id="terminal">
+  <h2><span class="num">6</span>终端与 Shell（开发者重点）</h2>
+
+  <h3>终端 App 选择</h3>
+  <ul>
+    <li><strong>iTerm2</strong>：经典之选，分屏、热键终端、配置丰富。<code>brew install --cask iterm2</code></li>
+    <li><strong>Warp</strong>：现代化、命令补全强、AI 集成（部分功能要登录）</li>
+    <li><strong>Ghostty</strong>：新兴 GPU 加速终端，性能极佳，配置纯文本</li>
+    <li><strong>WezTerm</strong>：跨平台，Lua 配置，平铺式</li>
+  </ul>
+
+  <h3>Shell 配置（zsh 默认）</h3>
+<pre><code><span class="c"># 安装 Oh My Zsh（最流行框架）</span>
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+<span class="c"># 推荐插件（写到 ~/.zshrc 的 plugins= 内）</span>
+<span class="c">#   git zsh-autosuggestions zsh-syntax-highlighting z</span>
+
+<span class="c"># 安装两个最有用的插件</span>
+brew install zsh-autosuggestions zsh-syntax-highlighting</code></pre>
+
+  <p>或者用更现代的 <strong>Starship</strong>（跨 shell 提示符，Rust 写的，秒级响应）：</p>
+<pre><code>brew install starship
+echo 'eval "$(starship init zsh)"' &gt;&gt; ~/.zshrc</code></pre>
+
+  <h3>必装命令行工具（Rust/Go 现代化替代）</h3>
+  <table class="tbl">
+    <tr><th>新工具</th><th>替代</th><th>说明</th></tr>
+    <tr><td><code>eza</code> / <code>lsd</code></td><td>ls</td><td>带图标、Git 状态、彩色</td></tr>
+    <tr><td><code>bat</code></td><td>cat</td><td>语法高亮 + 行号</td></tr>
+    <tr><td><code>fd</code></td><td>find</td><td>语法直观、默认尊重 .gitignore</td></tr>
+    <tr><td><code>rg</code> (ripgrep)</td><td>grep</td><td>极快，递归默认</td></tr>
+    <tr><td><code>fzf</code></td><td>—</td><td>模糊查找，绑定 <kbd>⌃</kbd>+<kbd>R</kbd> 改写历史搜索</td></tr>
+    <tr><td><code>zoxide</code></td><td>cd</td><td>智能跳转（<code>z proj</code> 跳到 ~/Documents/projects）</td></tr>
+    <tr><td><code>btop</code> / <code>htop</code></td><td>top</td><td>美观的进程监控</td></tr>
+    <tr><td><code>jq</code> / <code>yq</code></td><td>—</td><td>JSON/YAML 命令行处理</td></tr>
+    <tr><td><code>delta</code></td><td>diff</td><td>美化 git diff</td></tr>
+    <tr><td><code>tldr</code></td><td>man</td><td>简化 man，给例子</td></tr>
+  </table>
+
+<pre><code><span class="c"># 一行装齐</span>
+brew install eza bat fd ripgrep fzf zoxide btop jq yq git-delta tldr
+
+<span class="c"># 配 fzf 快捷键</span>
+$(brew --prefix)/opt/fzf/install</code></pre>
+
+  <h3>zsh 实用别名（写到 ~/.zshrc）</h3>
+<pre><code><span class="k">alias</span> ll=<span class="s">"eza -lah --git --icons"</span>
+<span class="k">alias</span> cat=<span class="s">"bat -p"</span>
+<span class="k">alias</span> grep=<span class="s">"rg"</span>
+<span class="k">alias</span> gst=<span class="s">"git status -sb"</span>
+<span class="k">alias</span> gcm=<span class="s">"git checkout main && git pull"</span>
+<span class="k">alias</span> gl=<span class="s">"git log --oneline --graph --decorate -20"</span>
+<span class="k">alias</span> py=<span class="s">"python3"</span>
+<span class="k">alias</span> serve=<span class="s">"python3 -m http.server 8000"</span>
+<span class="k">alias</span> ip=<span class="s">"ipconfig getifaddr en0"</span>
+<span class="k">alias</span> reload=<span class="s">"source ~/.zshrc"</span></code></pre>
+
+  <h3>macOS 自带 CLI 神器</h3>
+  <table class="tbl">
+    <tr><td><code>pbcopy</code> / <code>pbpaste</code></td><td>读写系统剪贴板。<code>cat file | pbcopy</code></td></tr>
+    <tr><td><code>open</code></td><td>用默认 App 打开：<code>open .</code> 当前目录、<code>open -a "Visual Studio Code"</code></td></tr>
+    <tr><td><code>say</code></td><td>语音合成：<code>say "build done"</code> 长任务结束提示</td></tr>
+    <tr><td><code>caffeinate</code></td><td>防止睡眠：<code>caffeinate -i ./long-task.sh</code></td></tr>
+    <tr><td><code>networksetup</code></td><td>命令行管网络</td></tr>
+    <tr><td><code>system_profiler</code></td><td>系统硬件/软件信息</td></tr>
+    <tr><td><code>diskutil</code></td><td>磁盘管理</td></tr>
+    <tr><td><code>mdfind</code></td><td>Spotlight 命令行接口：<code>mdfind -name "report"</code></td></tr>
+    <tr><td><code>screencapture</code></td><td>命令行截图：<code>screencapture -i shot.png</code></td></tr>
+    <tr><td><code>plutil</code></td><td>plist 文件查看/转换</td></tr>
+  </table>
+</section>
+
+<section id="dev">
+  <h2><span class="num">7</span>开发环境配置</h2>
+
+  <h3>第一步：Xcode Command Line Tools</h3>
+<pre><code>xcode-select --install</code></pre>
+  <p>提供 <code>git</code>、<code>clang</code>、<code>make</code> 等基本工具，所有开发的前置依赖。</p>
+
+  <h3>Homebrew（包管理器）</h3>
+<pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+  <p>Apple Silicon 装在 <code>/opt/homebrew</code>，Intel 装在 <code>/usr/local</code>。</p>
+
+  <div class="tip"><strong>Brewfile（推荐）：</strong>把所有依赖写到 <code>~/Brewfile</code>，新机器一行恢复：<code>brew bundle</code>。版本控制友好。</div>
+
+<pre><code><span class="c"># 示例 Brewfile</span>
+tap <span class="s">"homebrew/cask"</span>
+brew <span class="s">"git"</span>
+brew <span class="s">"node"</span>
+brew <span class="s">"python@3.12"</span>
+brew <span class="s">"ripgrep"</span>
+cask <span class="s">"visual-studio-code"</span>
+cask <span class="s">"iterm2"</span>
+cask <span class="s">"raycast"</span></code></pre>
+
+  <h3>版本管理工具（强烈推荐）</h3>
+  <ul>
+    <li><strong>mise</strong>（推荐，Rust 写的，asdf 替代品）：统管 Node / Python / Ruby / Go 等多语言版本</li>
+    <li><strong>nvm</strong> / <strong>fnm</strong>：仅 Node.js</li>
+    <li><strong>pyenv</strong>：仅 Python</li>
+    <li><strong>rustup</strong>：Rust（官方推荐）</li>
+  </ul>
+
+<pre><code><span class="c"># mise 示例</span>
+brew install mise
+mise use --global node@20 python@3.12
+echo 'eval "$(mise activate zsh)"' &gt;&gt; ~/.zshrc</code></pre>
+
+  <h3>Git 配置最佳实践</h3>
+<pre><code>git config --global user.name <span class="s">"Your Name"</span>
+git config --global user.email <span class="s">"you@example.com"</span>
+git config --global init.defaultBranch main
+git config --global pull.rebase true
+git config --global core.editor <span class="s">"code --wait"</span>
+git config --global core.autocrlf input
+
+<span class="c"># 启用 delta 美化 diff</span>
+git config --global core.pager <span class="s">"delta"</span>
+git config --global interactive.diffFilter <span class="s">"delta --color-only"</span></code></pre>
+
+  <h3>SSH key（GitHub）</h3>
+<pre><code>ssh-keygen -t ed25519 -C <span class="s">"you@example.com"</span>
+pbcopy &lt; ~/.ssh/id_ed25519.pub  <span class="c"># 已复制公钥</span>
+<span class="c"># 粘贴到 https://github.com/settings/keys</span></code></pre>
+
+  <h3>Docker / 容器化</h3>
+  <ul>
+    <li><strong>OrbStack</strong>（推荐）：比 Docker Desktop 启动快、省电、轻量，原生 ARM</li>
+    <li><strong>Colima</strong>：开源命令行替代</li>
+    <li><strong>Docker Desktop</strong>：官方，功能全</li>
+  </ul>
+</section>
+
+<section id="hidden">
+  <h2><span class="num">8</span>隐藏功能 · defaults write</h2>
+  <p class="intro">macOS 大量设置藏在 <code>defaults</code> 命令背后，下面是常用的几条。修改后通常需要 <code>killall &lt;App&gt;</code> 才生效。</p>
+
+  <h3>Dock</h3>
+<pre><code><span class="c"># Dock 自动隐藏时延迟 = 0、动画时间 = 0（响应飞快）</span>
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0
+killall Dock
+
+<span class="c"># Dock 只显示当前打开的 App（极简）</span>
+defaults write com.apple.dock static-only -bool true && killall Dock
+
+<span class="c"># 显示隐藏 App 的图标半透明</span>
+defaults write com.apple.dock showhidden -bool true && killall Dock
+
+<span class="c"># 还原</span>
+defaults delete com.apple.dock static-only && killall Dock</code></pre>
+
+  <h3>Finder</h3>
+<pre><code><span class="c"># 显示完整路径在标题栏</span>
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+<span class="c"># 默认显示为列表视图</span>
+defaults write com.apple.finder FXPreferredViewStyle Nlsv
+
+<span class="c"># 禁止 .DS_Store 写入网络/U盘</span>
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+killall Finder</code></pre>
+
+  <h3>键盘 / 重复速度</h3>
+<pre><code><span class="c"># 按键重复速度（越小越快，默认 2）</span>
+defaults write -g KeyRepeat -int 2
+defaults write -g InitialKeyRepeat -int 15  <span class="c"># 默认 25</span>
+
+<span class="c"># 启用长按键不弹音标菜单，改为重复键入</span>
+defaults write -g ApplePressAndHoldEnabled -bool false</code></pre>
+  <div class="warn"><strong>注意：</strong>键盘设置改完要 <strong>注销重登</strong>才生效。</div>
+
+  <h3>其他</h3>
+<pre><code><span class="c"># 关闭"启动声"</span>
+sudo nvram StartupMute=%01
+
+<span class="c"># 截图改为 jpg（默认 png）</span>
+defaults write com.apple.screencapture type jpg
+
+<span class="c"># 显示 ~/Library 文件夹</span>
+chflags nohidden ~/Library
+
+<span class="c"># 关闭打开新文件时的"是否要打开?"提示</span>
+defaults write com.apple.LaunchServices LSQuarantine -bool false</code></pre>
+</section>
+
+<section id="clipboard">
+  <h2><span class="num">9</span>输入法与剪贴板</h2>
+
+  <h3>剪贴板历史（系统不自带）</h3>
+  <p>原生剪贴板只有一个槽位，强烈推荐安装：</p>
+  <ul>
+    <li><strong>Raycast</strong> → Clipboard History（推荐，免费、搜索强）</li>
+    <li><strong>Maccy</strong>（开源轻量，<code>brew install --cask maccy</code>）</li>
+    <li><strong>Paste</strong>（付费，颜值高）</li>
+  </ul>
+
+  <h3>文本替换（Text Replacement）</h3>
+  <p>系统设置 → Keyboard → Text Replacements。常用片段：</p>
+  <ul>
+    <li><code>;em</code> → 你的邮箱</li>
+    <li><code>;addr</code> → 你的地址</li>
+    <li><code>;phone</code> → 手机号</li>
+    <li><code>;date</code> → 配合输入法可输入当前日期</li>
+  </ul>
+  <p>iCloud 同步后，iPhone/iPad 上也能用。</p>
+
+  <h3>输入法（中文）</h3>
+  <ul>
+    <li><strong>系统拼音</strong>：基础够用，可加自定义短语</li>
+    <li><strong>RIME (鼠须管 Squirrel)</strong>：开源、可深度定制、隐私好</li>
+    <li><strong>搜狗</strong>：词库强但有隐私争议</li>
+  </ul>
+
+  <h3>Emoji 与符号面板</h3>
+  <p>任何输入框按 <kbd>⌃</kbd>+<kbd>⌘</kbd>+<kbd>Space</kbd> 调出 Emoji/符号选择器，含希腊字母、箭头、数学符号等。</p>
+</section>
+
+<section id="system">
+  <h2><span class="num">10</span>系统维护与性能</h2>
+
+  <h3>查看资源占用</h3>
+  <ul>
+    <li><strong>Activity Monitor</strong>（应用程序 → 实用工具）：CPU / 内存 / 能耗 / 磁盘 / 网络</li>
+    <li><strong>菜单栏挂件</strong>：<code>brew install --cask stats</code>（开源、可配置）</li>
+    <li><strong>命令行</strong>：<code>top</code>、<code>htop</code>、<code>btop</code></li>
+  </ul>
+
+  <h3>存储清理</h3>
+  <pre><code><span class="c"># 查看大文件夹</span>
+brew install dust ncdu
+dust ~/Downloads
+ncdu ~/Library/Caches
+
+<span class="c"># Brew 缓存清理</span>
+brew cleanup --prune=all
+
+<span class="c"># Xcode 占用极大，清 DerivedData</span>
+rm -rf ~/Library/Developer/Xcode/DerivedData/*</code></pre>
+
+  <ul>
+    <li><strong>System Settings → Storage → Manage</strong>：系统自带的清理建议</li>
+    <li><strong>OmniDiskSweeper</strong> / <strong>GrandPerspective</strong>：图形化大文件分析（免费）</li>
+    <li><strong>AppCleaner</strong>：卸载 App 时连带删除其残留文件</li>
+  </ul>
+
+  <h3>安全与权限</h3>
+  <p>System Settings → Privacy & Security：</p>
+  <ul>
+    <li><strong>Full Disk Access</strong>：备份/搜索工具需要</li>
+    <li><strong>Accessibility</strong>：窗口管理、键鼠工具需要</li>
+    <li><strong>Screen Recording</strong>：录屏、远程协助</li>
+    <li><strong>Input Monitoring</strong>：键盘 hook 工具</li>
+  </ul>
+  <div class="warn"><strong>提示：</strong>新装 App 第一次运行时若卡住或没反应，先去 Privacy & Security 看是否被拦截。</div>
+
+  <h3>系统更新策略</h3>
+  <ul>
+    <li>主版本（如 14 → 15）建议等 <strong>X.1 或 X.2</strong> 再升，初版常有兼容性问题</li>
+    <li>开发机器更新前确认：Xcode、Docker、依赖工具是否已适配</li>
+    <li>Time Machine 备份 + APFS Snapshot，升级前必做</li>
+  </ul>
+</section>
+
+<section id="apps">
+  <h2><span class="num">11</span>推荐 App 速览</h2>
+
+  <h3>效率与基础</h3>
+  <div class="cards">
+    <div class="card"><div class="ct">Raycast</div><div class="cd">Spotlight 升级版，剪贴板/窗口/AI/扩展</div></div>
+    <div class="card"><div class="ct">Rectangle</div><div class="cd">窗口管理，开源免费</div></div>
+    <div class="card"><div class="ct">AltTab</div><div class="cd">Win 风格 alt-tab，含窗口预览</div></div>
+    <div class="card"><div class="ct">Karabiner-Elements</div><div class="cd">键位重映射，Caps Lock → Esc 必备</div></div>
+    <div class="card"><div class="ct">Hammerspoon</div><div class="cd">Lua 脚本自动化，自定义任意快捷键</div></div>
+    <div class="card"><div class="ct">Bartender / Hidden Bar</div><div class="cd">菜单栏图标整理</div></div>
+  </div>
+
+  <h3>开发</h3>
+  <div class="cards">
+    <div class="card"><div class="ct">VS Code / Cursor</div><div class="cd">编辑器（Cursor 是 AI 增强版）</div></div>
+    <div class="card"><div class="ct">iTerm2 / Ghostty</div><div class="cd">终端</div></div>
+    <div class="card"><div class="ct">Postman / Insomnia / Bruno</div><div class="cd">API 调试（Bruno 开源本地）</div></div>
+    <div class="card"><div class="ct">TablePlus</div><div class="cd">数据库 GUI，支持多种 DB</div></div>
+    <div class="card"><div class="ct">OrbStack</div><div class="cd">Docker/Linux 容器，比 Docker Desktop 快</div></div>
+    <div class="card"><div class="ct">GitHub Desktop / Tower / Fork</div><div class="cd">Git GUI</div></div>
+    <div class="card"><div class="ct">Charles / Proxyman</div><div class="cd">HTTP 抓包代理</div></div>
+    <div class="card"><div class="ct">Dash / DevDocs</div><div class="cd">离线文档</div></div>
+  </div>
+
+  <h3>笔记与写作</h3>
+  <div class="cards">
+    <div class="card"><div class="ct">Obsidian</div><div class="cd">Markdown 双链笔记，本地优先</div></div>
+    <div class="card"><div class="ct">Notion / Craft</div><div class="cd">协作文档</div></div>
+    <div class="card"><div class="ct">Bear / Drafts</div><div class="cd">Apple 生态笔记</div></div>
+    <div class="card"><div class="ct">Typora / iA Writer</div><div class="cd">Markdown 写作</div></div>
+  </div>
+
+  <h3>其他常用</h3>
+  <div class="cards">
+    <div class="card"><div class="ct">IINA</div><div class="cd">现代化视频播放器（mpv 内核）</div></div>
+    <div class="card"><div class="ct">Keka / The Unarchiver</div><div class="cd">压缩/解压</div></div>
+    <div class="card"><div class="ct">CleanShot X</div><div class="cd">截图增强（付费，最强）</div></div>
+    <div class="card"><div class="ct">1Password / Bitwarden</div><div class="cd">密码管理</div></div>
+    <div class="card"><div class="ct">AdGuard / Wipr</div><div class="cd">Safari 广告拦截</div></div>
+    <div class="card"><div class="ct">Tailscale</div><div class="cd">点对点 VPN，跨设备网络</div></div>
+  </div>
+</section>
+
+<section id="network">
+  <h2><span class="num">12</span>网络与调试</h2>
+
+  <h3>查看 IP / 网络状态</h3>
+<pre><code><span class="c"># 局域网 IP（Wi-Fi）</span>
+ipconfig getifaddr en0
+
+<span class="c"># 公网 IP</span>
+curl ifconfig.me
+
+<span class="c"># Wi-Fi 信号详情（含信道、强度、噪声）</span>
+<span class="c"># 按住 Option 点击菜单栏 Wi-Fi 图标</span>
+
+<span class="c"># 命令行扫 Wi-Fi</span>
+/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s</code></pre>
+
+  <h3>端口占用排查</h3>
+<pre><code><span class="c"># 找谁占着 3000 端口</span>
+lsof -i :3000
+
+<span class="c"># 一次性 kill</span>
+lsof -ti:3000 | xargs kill -9</code></pre>
+
+  <h3>DNS 与 hosts</h3>
+<pre><code><span class="c"># 刷 DNS 缓存（开发常用）</span>
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+
+<span class="c"># 修改 hosts</span>
+sudo vim /etc/hosts</code></pre>
+
+  <h3>抓包与 mock</h3>
+  <ul>
+    <li><strong>Proxyman / Charles</strong>：HTTPS 抓包，需要装根证书并信任</li>
+    <li><strong>mitmproxy</strong>：命令行/Python 脚本</li>
+    <li><strong>ngrok / Cloudflare Tunnel</strong>：把本地服务暴露到公网</li>
+  </ul>
+
+  <h3>本地静态服务</h3>
+<pre><code><span class="c"># Python 自带（无 reload）</span>
+python3 -m http.server 8080
+
+<span class="c"># Node 现代化（自动 reload）</span>
+npx serve .
+npx http-server -p 8080</code></pre>
+</section>
+
+<section id="ecosystem">
+  <h2><span class="num">13</span>Apple 生态联动（容易被忽略）</h2>
+
+  <ul>
+    <li><strong>Universal Clipboard</strong>：Mac/iPhone/iPad 之间复制粘贴（同 Apple ID + Wi-Fi + 蓝牙）</li>
+    <li><strong>Continuity Camera</strong>：iPhone 当 Mac 摄像头/扫描仪，FaceTime/Zoom 直接选</li>
+    <li><strong>iPhone Mirroring</strong>（Sequoia+）：Mac 上直接操作 iPhone</li>
+    <li><strong>Handoff</strong>：Safari/Pages/Notes 等切设备无缝续</li>
+    <li><strong>Sidecar</strong>：iPad 当 Mac 第二屏（有线/无线）</li>
+    <li><strong>AirDrop</strong>：跨设备秒传，文件大也行</li>
+    <li><strong>iMessage 接力</strong>：Mac 收发 SMS</li>
+    <li><strong>Focus Mode 跨设备同步</strong>：一处设置，所有设备应用</li>
+  </ul>
+
+  <div class="tip"><strong>iCloud Keychain：</strong>系统级密码管理器，Safari 自动填充。如果你不想用第三方（1Password），它已经够好用，且免费。</div>
+</section>
+
+</main>
+
+<footer>
+  本页持续更新 ·
+  <a href="index.html">← 返回首页</a> ·
+  <a href="https://github.com/zhangwenwei/report">GitHub Repo</a>
+</footer>
+
+</div>
+</body>
+</html>
