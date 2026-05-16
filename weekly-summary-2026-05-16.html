@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本周工作总结 · 2026-05-16</title>
+<meta name="description" content="本周工作总结：HTML 报告产出、GitHub Pages 自动化、macOS 与 GitHub 教程编写，并搭建报告导航索引">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0d1117;--panel:#161b22;--panel-2:#1c2128;--border:#30363d;
+    --text:#e6edf3;--muted:#7d8590;--accent:#58a6ff;--accent-2:#3fb950;
+    --warn:#d29922;--code-bg:#0a0e14;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 80px}
+
+  header.hero{padding:32px 28px;background:linear-gradient(135deg,#161b22,#1c2128);border:1px solid var(--border);border-radius:16px;margin-bottom:24px}
+  header.hero h1{font-size:30px;font-weight:700;margin-bottom:10px;background:linear-gradient(90deg,#58a6ff,#3fb950);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header.hero .lead{color:var(--muted);font-size:15px;max-width:680px}
+  header.hero .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  header.hero .meta span{font-size:12px;padding:3px 10px;background:#1f6feb22;color:var(--accent);border-radius:10px}
+
+  section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-bottom:20px}
+  section h2{font-size:22px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  section h2 .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#1f6feb22;color:var(--accent);border-radius:8px;font-size:14px;font-weight:600}
+  section h3{font-size:16px;font-weight:600;margin:18px 0 8px;color:#c9d1d9;border-left:3px solid var(--accent);padding-left:10px}
+
+  p{margin:8px 0;color:#c9d1d9}
+  ul{margin:6px 0 12px 22px;color:#c9d1d9}
+  li{margin:6px 0}
+  strong{color:#fff}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:6px 0 4px}
+  .stat{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+  .stat .n{font-size:22px;font-weight:700;color:var(--accent)}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+  .timeline{position:relative;padding-left:22px;margin:8px 0}
+  .timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--border)}
+  .item{position:relative;margin-bottom:14px}
+  .item::before{content:"";position:absolute;left:-22px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg)}
+  .item .hash{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--accent-2);background:#0a0e14;padding:1px 6px;border-radius:4px;margin-right:6px}
+  .item .desc{color:var(--muted);font-size:13px;margin-top:2px}
+
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;margin-right:4px}
+  .tag.feat{background:#23863622;color:var(--accent-2)}
+  .tag.docs{background:#1f6feb22;color:var(--accent)}
+  .tag.chore{background:#7d859022;color:var(--muted)}
+
+  footer{margin-top:30px;padding:20px 8px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>📅 本周工作总结</h1>
+    <div class="lead">围绕「个人报告仓库」做了一轮集中产出：完成多份 HTML 报告、搭建导航索引并配置 GitHub Pages 自动化发布流程。</div>
+    <div class="meta">
+      <span>周期：2026-05-10 ~ 2026-05-16</span>
+      <span>仓库：zhangwenwei/report</span>
+      <span>提交：6</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span>本周数据概览</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">6</div><div class="l">Git 提交</div></div>
+      <div class="stat"><div class="n">8</div><div class="l">HTML 报告</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">GitHub Action</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">导航索引页</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>主要工作内容</h2>
+
+    <h3>📚 内容产出 · HTML 报告与教程</h3>
+    <ul>
+      <li><strong>GitHub 使用教程</strong>：从入门到精通的完整教程（<a href="github-tutorial.html">github-tutorial.html</a>）。</li>
+      <li><strong>macOS 进阶指南</strong>：面向中阶用户与开发者的详细 Tips，涵盖快捷键、窗口管理、Spotlight、终端、Homebrew、隐藏设置、调试技巧等（<a href="macos-tips.html">macos-tips.html</a>）。</li>
+      <li><strong>Claude Code 系列调研</strong>：UI 设计 Skills、Game Studios、Agent View 图文指南、趣味 Skills 等多份调研报告。</li>
+      <li><strong>PMP 学习资源整理</strong>：GitHub 上的 PMP 备考精选资料汇总。</li>
+      <li><strong>Block Blast Mockup</strong>：交互原型页面。</li>
+    </ul>
+
+    <h3>🏠 仓库基础设施</h3>
+    <ul>
+      <li><strong>导航索引</strong>：新增 <code>index.html</code> 卡片式入口，集中列出所有报告，统一暗色主题视觉。</li>
+      <li><strong>自动化生成脚本</strong>：<code>scripts/generate-index.py</code> 扫描根目录全部 HTML 文件，自动提取 <code>&lt;title&gt;</code> 与 <code>description</code> 生成索引。</li>
+      <li><strong>GitHub Actions 工作流</strong>：push 时自动重新生成 <code>index.html</code> 并提交，避免新增报告后忘记更新导航。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>提交记录时间线</h2>
+    <div class="timeline">
+      <div class="item">
+        <span class="tag docs">docs</span><span class="hash">d213875</span>add GitHub usage tutorial in HTML
+        <div class="desc">第一份长文教程上线，奠定后续报告的暗色排版基调。</div>
+      </div>
+      <div class="item">
+        <span class="tag docs">docs</span><span class="hash">2d82843</span>add HTML reports and guides
+        <div class="desc">批量补齐多份 Claude Code 调研报告与 PMP、Block Blast 等内容。</div>
+      </div>
+      <div class="item">
+        <span class="tag feat">feat</span><span class="hash">cad620f</span>add navigation index page listing all reports
+        <div class="desc">引入卡片式导航首页，访问 GitHub Pages 时一眼可达全部内容。</div>
+      </div>
+      <div class="item">
+        <span class="tag feat">feat</span><span class="hash">d801ba1</span>auto-regenerate index page on push via GitHub Actions
+        <div class="desc">把"加新文件 → 改导航"这一步交给 CI，杜绝遗漏。</div>
+      </div>
+      <div class="item">
+        <span class="tag docs">docs</span><span class="hash">f27b350</span>add detailed macOS usage and tips guide for developers
+        <div class="desc">补上 macOS 进阶 Tips，作为周内体量最大的一份指南。</div>
+      </div>
+      <div class="item">
+        <span class="tag chore">chore</span><span class="hash">463a5de</span>regenerate index [skip-index]
+        <div class="desc">GitHub Actions 首次自动跑通：新增 macOS Tips 后索引自动重建。</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>收获与思考</h2>
+    <ul>
+      <li><strong>从"散文件"到"知识库"</strong>：通过统一暗色主题 + 导航索引，零散报告被组织成了可浏览的小型知识站。</li>
+      <li><strong>能自动化的就别手动维护</strong>：导航文件自动生成的 Action 跑通后，后续新增报告只关心内容本身，维护成本明显下降。</li>
+      <li><strong>HTML 比 Markdown 更适合"成品交付"</strong>：自定义排版、目录、卡片、表格的表现力都更强，且可直接通过 GitHub Pages 分发。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>下周计划</h2>
+    <ul>
+      <li>给所有历史报告补齐 <code>&lt;meta name="description"&gt;</code>，让索引卡片都带上简介。</li>
+      <li>为索引页加上"最近更新时间"和分类标签（教程 / 调研 / 资源）。</li>
+      <li>考虑加一个 RSS 或更新日志页，方便订阅。</li>
+      <li>继续完成 1–2 篇深度调研类报告。</li>
+    </ul>
+  </section>
+
+  <footer>
+    Hosted on GitHub Pages · <a href="https://github.com/zhangwenwei/report">View Repository</a> · Generated 2026-05-16
+  </footer>
+</div>
+</body>
+</html>
