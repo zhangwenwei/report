@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 趣味 Claude Code Skills 调研报告 · 游戏与网页方向</title>
+<style>
+  :root{
+    --bg:#0a0e1a;
+    --bg-2:#0f1424;
+    --card:#141a2e;
+    --card-hover:#1a2240;
+    --line:#2a3252;
+    --text:#e6e9f5;
+    --muted:#8a93b3;
+    --accent:#a78bfa;
+    --accent-2:#22d3ee;
+    --accent-3:#f472b6;
+    --warn:#fbbf24;
+    --ok:#34d399;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(167,139,250,.15), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, rgba(34,211,238,.12), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 28px 80px}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    padding:56px 44px;
+    border-radius:24px;
+    background:linear-gradient(135deg, rgba(167,139,250,.18), rgba(34,211,238,.12));
+    border:1px solid var(--line);
+    overflow:hidden;
+    margin-bottom:40px;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:32px 32px;
+    mask-image:radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    pointer-events:none;
+  }
+  .hero-content{position:relative;z-index:1}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 14px;border-radius:999px;
+    background:rgba(167,139,250,.15);
+    border:1px solid rgba(167,139,250,.3);
+    color:var(--accent);
+    font-size:13px;font-weight:600;letter-spacing:.5px;
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  h1{
+    font-size:46px;font-weight:800;margin:18px 0 14px;
+    letter-spacing:-1px;
+    background:linear-gradient(120deg, #fff 0%, #a78bfa 50%, #22d3ee 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .hero p.lead{font-size:18px;color:var(--muted);max-width:760px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:28px}
+  .hero-meta span{
+    font-size:13px;color:var(--muted);
+    padding:6px 12px;border-radius:8px;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+  }
+  .hero-meta b{color:var(--text);font-weight:600;margin-right:4px}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:40px 0 56px}
+  .stat{padding:24px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+  .stat .num{font-size:34px;font-weight:800;color:var(--accent-2);letter-spacing:-1px}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:6px}
+
+  /* SECTION */
+  .section{margin:64px 0 32px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;gap:24px;flex-wrap:wrap}
+  .section h2{
+    font-size:30px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:14px;
+  }
+  .section h2 .tag{
+    font-size:13px;font-weight:600;padding:4px 10px;border-radius:8px;
+    background:rgba(34,211,238,.12);color:var(--accent-2);border:1px solid rgba(34,211,238,.3);
+  }
+  .section h2 .tag.purple{background:rgba(167,139,250,.12);color:var(--accent);border-color:rgba(167,139,250,.3)}
+  .section h2 .tag.pink{background:rgba(244,114,182,.12);color:var(--accent-3);border-color:rgba(244,114,182,.3)}
+  .section .sub{color:var(--muted);font-size:15px;max-width:600px}
+
+  /* CARD GRID */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.4);background:var(--card-hover)}
+  .card-cover{
+    aspect-ratio:16/8;
+    background:linear-gradient(135deg, #1e2746, #0f1424);
+    position:relative;overflow:hidden;
+  }
+  .card-cover img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+  .card-cover .overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(20,26,46,.95) 100%);
+  }
+  .card-cover .pill{
+    position:absolute;top:14px;left:14px;
+    padding:5px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px;
+    background:rgba(10,14,26,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);
+    color:var(--text);
+  }
+  .card-cover .stars{
+    position:absolute;top:14px;right:14px;
+    padding:5px 10px;border-radius:8px;font-size:12px;font-weight:700;
+    background:rgba(251,191,36,.18);color:var(--warn);border:1px solid rgba(251,191,36,.3);
+    display:flex;align-items:center;gap:5px;
+  }
+  .card-body{padding:22px 24px 24px;display:flex;flex-direction:column;flex:1}
+  .repo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .repo img{width:24px;height:24px;border-radius:50%;border:1px solid var(--line)}
+  .repo .name{font-size:13px;color:var(--muted);font-family:"SF Mono","Menlo",monospace}
+  .card h3{font-size:20px;font-weight:700;margin-bottom:10px;letter-spacing:-.3px}
+  .card p.desc{font-size:14px;color:var(--muted);margin-bottom:16px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+  .tags span{
+    font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);
+  }
+  .tags span.hot{background:rgba(244,114,182,.12);color:var(--accent-3);border-color:rgba(244,114,182,.3)}
+  .features{list-style:none;font-size:13px;color:var(--text);margin-bottom:18px}
+  .features li{padding:4px 0;display:flex;align-items:flex-start;gap:8px}
+  .features li::before{content:"▸";color:var(--accent);flex-shrink:0;margin-top:1px}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--line)}
+  .install{
+    font-family:"SF Mono","Menlo",monospace;font-size:11px;
+    color:var(--accent-2);background:rgba(34,211,238,.06);
+    padding:6px 10px;border-radius:6px;border:1px solid rgba(34,211,238,.2);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%;
+  }
+  .link{
+    font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;
+    padding:6px 12px;border-radius:6px;border:1px solid rgba(167,139,250,.3);
+    transition:background .2s;
+  }
+  .link:hover{background:rgba(167,139,250,.12)}
+
+  /* HIGHLIGHT */
+  .highlight{
+    margin-top:18px;padding:14px 16px;border-radius:10px;
+    background:linear-gradient(90deg, rgba(167,139,250,.1), rgba(34,211,238,.05));
+    border-left:3px solid var(--accent);
+    font-size:13px;color:var(--text);
+  }
+  .highlight b{color:var(--accent)}
+
+  /* COMBO BLOCK */
+  .combo{
+    margin-top:48px;padding:32px;border-radius:18px;
+    background:linear-gradient(135deg, rgba(244,114,182,.1), rgba(167,139,250,.08));
+    border:1px solid rgba(244,114,182,.2);
+  }
+  .combo h3{font-size:22px;margin-bottom:8px;color:var(--accent-3)}
+  .combo p.sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .combo-item{padding:20px;border-radius:12px;background:rgba(10,14,26,.5);border:1px solid var(--line)}
+  .combo-item .num{font-size:11px;font-weight:700;color:var(--accent-3);letter-spacing:1px}
+  .combo-item h4{font-size:16px;margin:6px 0 8px}
+  .combo-item p{font-size:13px;color:var(--muted)}
+
+  /* FOOT */
+  footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
+  footer a{color:var(--accent);text-decoration:none}
+
+  @media (max-width:880px){
+    h1{font-size:34px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .grid,.grid.three,.combo-grid{grid-template-columns:1fr}
+    .hero{padding:36px 24px}
+    .wrap{padding:28px 16px 60px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="badge"><span class="dot"></span>调研报告 · 2026 年 5 月</span>
+      <h1>GitHub 上有意思的<br/>Claude Code Skills</h1>
+      <p class="lead">面向 <b style="color:#a78bfa">游戏开发</b> 与 <b style="color:#22d3ee">网页/3D/动画</b> 两条线，整理目前 GitHub 上最值得安装的 Skill 仓库、聚合 Awesome 列表，以及推荐的组合用法。</p>
+      <div class="hero-meta">
+        <span><b>覆盖方向</b>2D / 3D 游戏 · WebGL · Three.js · Phaser · GSAP · React Three Fiber</span>
+        <span><b>调研范围</b>10+ 核心仓库 · 5+ Awesome 聚合站</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="num">18.8k</div><div class="lbl">头部仓库 Star 数（Game Studios）</div></div>
+    <div class="stat"><div class="num">1400+</div><div class="lbl">最大 Skill 聚合库收录数量</div></div>
+    <div class="stat"><div class="num">49</div><div class="lbl">游戏工作室模式中的 AI Agent 数</div></div>
+    <div class="stat"><div class="num">27</div><div class="lbl">3D/动画 Skill 包数量</div></div>
+  </div>
+
+  <!-- SECTION 1: GAME -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>游戏开发方向 <span class="tag purple">GAME DEV</span></h2>
+        <p class="sub">从「整套工作室」到「单一引擎专精」，覆盖 Phaser、Three.js、Godot、Unity、Unreal。</p>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Claude Code Game Studios -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/Donchitos/Claude-Code-Game-Studios" alt="Game Studios cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">旗舰项目</span>
+          <span class="stars">★ 18.8k</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/Donchitos.png?size=48" alt=""/>
+            <span class="name">Donchitos/Claude-Code-Game-Studios</span>
+          </div>
+          <h3>把 Claude Code 变成一整间游戏工作室</h3>
+          <p class="desc">三层 AI 团队结构：Director（Opus）→ Department Lead（Sonnet）→ Specialist（Haiku），覆盖设计、程序、美术、音频、叙事、QA、发行。</p>
+          <div class="tags">
+            <span class="hot">49 Agents</span>
+            <span>73 Skills</span>
+            <span>Godot 4</span>
+            <span>Unity</span>
+            <span>Unreal 5</span>
+          </div>
+          <ul class="features">
+            <li>斜杠命令工作流：/brainstorm /design-system /dev-story /qa-plan /launch-checklist</li>
+            <li>12 个 Hook 脚本自动校验提交、资源、代码规范</li>
+            <li>41 个文档模板（GDD、ADR、Specs）</li>
+            <li>团队协作命令：/team-combat /team-ui /team-narrative</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>独立游戏开发者想把零散对话流程化；或团队希望多人共享同一套 AI 工作流。</div>
+          <div class="card-foot">
+            <code class="install">git clone ... && claude && /start</code>
+            <a class="link" href="https://github.com/Donchitos/Claude-Code-Game-Studios">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Development Patterns -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/HermeticOrmus/claude-code-game-development" alt="Game Dev Patterns cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">学习型</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/HermeticOrmus.png?size=48" alt=""/>
+            <span class="name">HermeticOrmus/claude-code-game-development</span>
+          </div>
+          <h3>50000 字文档 + 10 个完整游戏例子</h3>
+          <p class="desc">把游戏开发常见模式（游戏循环、碰撞、状态机、ECS、寻路、过程生成、网络）整理成 Claude Code 可直接读取的 Skill 资料。</p>
+          <div class="tags">
+            <span>Phaser 3</span>
+            <span>Babylon.js</span>
+            <span>PixiJS</span>
+            <span>Canvas 2D</span>
+            <span>WebGL</span>
+          </div>
+          <ul class="features">
+            <li>入门：Pong / Snake / Tetris / Breakout / Flappy Bird</li>
+            <li>进阶：平台跳跃、塔防、消消乐、Roguelike</li>
+            <li>高级：多人射击（网络）、过程生成 RPG、即时战略</li>
+            <li>每个例子都附 README + 提示词 + 可玩 Demo</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>第一次用 Claude Code 做游戏，或者想了解「怎么 prompt 才能做出像样的游戏」。</div>
+          <div class="card-foot">
+            <code class="install">git clone && npx serve .</code>
+            <a class="link" href="https://github.com/HermeticOrmus/claude-code-game-development">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phaser 4 -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/Yakoub-ai/phaser4-gamedev" alt="Phaser4 cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">引擎专精</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/Yakoub-ai.png?size=48" alt=""/>
+            <span class="name">Yakoub-ai/phaser4-gamedev</span>
+          </div>
+          <h3>Phaser 4 专属插件（4 Agents + 20 Skills）</h3>
+          <p class="desc">针对 Phaser 4 (v4.0.0-rc.7) 编码深度知识，含新 Beam 渲染器、Shader 系统、v3→v4 迁移规则。</p>
+          <div class="tags">
+            <span class="hot">Phaser 4</span>
+            <span>WebGL</span>
+            <span>Matter.js</span>
+            <span>TypeScript</span>
+            <span>Tiled</span>
+          </div>
+          <ul class="features">
+            <li>架构师 / 编码者 / 调试器 / 资源顾问 4 个角色</li>
+            <li>Skills：场景生命周期、物理、动画、Tilemap、音频、移动端打包</li>
+            <li>v3→v4 迁移辅助</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>明确选了 Phaser 做 HTML5 2D 游戏的人。</div>
+          <div class="card-foot">
+            <code class="install">/plugin marketplace add Yakoub-ai/phaser4-gamedev</code>
+            <a class="link" href="https://github.com/Yakoub-ai/phaser4-gamedev">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- OpusGameLabs -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/OpusGameLabs/game-creator" alt="Game Creator cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">端到端流水线</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/OpusGameLabs.png?size=48" alt=""/>
+            <span class="name">OpusGameLabs/game-creator</span>
+          </div>
+          <h3>从想法到可变现游戏的一条龙</h3>
+          <p class="desc">"Opinionated" 插件，主张一种确定流程：scaffold → 像素画 → 设计 → 程序化音频 → 测试 → 部署 → 变现。</p>
+          <div class="tags">
+            <span>Phaser 3</span>
+            <span>Three.js</span>
+            <span>Strudel.cc</span>
+            <span>Playwright</span>
+            <span>Play.fun</span>
+          </div>
+          <ul class="features">
+            <li>2D 用 Phaser 3、3D 用 Three.js（0.183.0）</li>
+            <li>内置 QA 子代理，每一步代码自动验证</li>
+            <li>8 个完整示例游戏，涵盖两个引擎</li>
+            <li>支持 40+ 编码 Agent（不止 Claude Code）</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>想几小时内做出可玩 + 可发布 + 可变现的小游戏。</div>
+          <div class="card-foot">
+            <code class="install">npx skills add OpusGameLabs/game-creator</code>
+            <a class="link" href="https://github.com/OpusGameLabs/game-creator">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 2: WEB / 3D -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>网页 / 3D / 动画方向 <span class="tag">WEB &amp; 3D</span></h2>
+        <p class="sub">做酷炫 Landing Page、3D 互动站、滚动动画的人最该关注的几个 Skill。</p>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- claudedesignskills -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/freshtechbro/claudedesignskills" alt="Design Skills cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">设计 Skill 套装</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/freshtechbro.png?size=48" alt=""/>
+            <span class="name">freshtechbro/claudedesignskills</span>
+          </div>
+          <h3>3D / 动画 / 互动 Web 一站式 27 插件</h3>
+          <p class="desc">把"专业设计代理商"的整套技术栈打包成 Skill，5 个分类 Bundle，22 个独立 Skill。</p>
+          <div class="tags">
+            <span class="hot">Three.js</span>
+            <span class="hot">GSAP</span>
+            <span class="hot">R3F</span>
+            <span>Framer Motion</span>
+            <span>Babylon.js</span>
+            <span>Spline</span>
+            <span>Rive</span>
+          </div>
+          <ul class="features">
+            <li><b>core-3d-animation</b>：Three.js / GSAP / R3F / Motion / Babylon.js</li>
+            <li><b>extended-3d-scroll</b>：A-Frame / Vanta / PlayCanvas / Locomotive Scroll</li>
+            <li><b>animation-components</b>：React Spring / Magic UI / AOS / Anime.js / Lottie</li>
+            <li><b>authoring-motion</b>：Blender / Spline / Rive / Substance 3D</li>
+            <li>50+ 斜杠命令生成样板</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>做品牌 Landing Page、3D 产品展示、互动 Portfolio 的前端。</div>
+          <div class="card-foot">
+            <code class="install">/plugin marketplace add freshtechbro/claudedesignskills</code>
+            <a class="link" href="https://github.com/freshtechbro/claudedesignskills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- webgpu skill -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/dgreenheck/webgpu-claude-skill" alt="WebGPU cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">前沿技术</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/dgreenheck.png?size=48" alt=""/>
+            <span class="name">dgreenheck/webgpu-claude-skill</span>
+          </div>
+          <h3>WebGPU + Three.js + TSL 着色器</h3>
+          <p class="desc">把 Three.js Shading Language（TSL）和 WebGPU 渲染器的用法编码进 Skill，让 Claude 能写 GPU 计算 / 后处理 / 节点材质。</p>
+          <div class="tags">
+            <span class="hot">WebGPU</span>
+            <span>TSL</span>
+            <span>WGSL</span>
+            <span>Compute Shader</span>
+          </div>
+          <ul class="features">
+            <li>节点材质（金属度、粗糙度、Clearcoat、虹彩）</li>
+            <li>GPU 并行物理 / 粒子系统 / Atomic 操作</li>
+            <li>后处理：Bloom / Blur / FXAA / DoF</li>
+            <li>GPU 设备丢失检测与恢复</li>
+          </ul>
+          <div class="highlight"><b>适合谁：</b>已经会 Three.js 想往前沿走（粒子上百万、自定义 Shader）。</div>
+          <div class="card-foot">
+            <code class="install">/skill install webgpu-threejs-tsl@...</code>
+            <a class="link" href="https://github.com/dgreenheck/webgpu-claude-skill">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- threejs-skills -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/cloudai-x/threejs-skills" alt="ThreeJS Skills cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">轻量 · 聚焦</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/cloudai-x.png?size=48" alt=""/>
+            <span class="name">CloudAI-X/threejs-skills</span>
+          </div>
+          <h3>Three.js 基础知识 Skill 集</h3>
+          <p class="desc">curated 的 Three.js Skill 文件，按上下文自动载入 <code>.claude/skills</code>，给 Claude Code 一套 3D 基础认知。</p>
+          <div class="tags">
+            <span>Three.js</span>
+            <span>3D 交互</span>
+            <span>自动激活</span>
+          </div>
+          <ul class="features">
+            <li>不复杂，适合作为最小起点</li>
+            <li>可与上方 webgpu / claudedesignskills 组合使用</li>
+          </ul>
+          <div class="card-foot">
+            <code class="install">复制到 .claude/skills/</code>
+            <a class="link" href="https://github.com/cloudai-x/threejs-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- daymade -->
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/daymade/claude-code-skills" alt="daymade cover" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">通用开发</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/daymade.png?size=48" alt=""/>
+            <span class="name">daymade/claude-code-skills</span>
+          </div>
+          <h3>"Marketplace"风格的生产级 Skill</h3>
+          <p class="desc">主打"production-ready"，更偏通用工程，但其中包含一些 UI/前端工作流可以配合游戏/网页项目使用。</p>
+          <div class="tags">
+            <span>工程化</span>
+            <span>前端</span>
+            <span>Skill Marketplace</span>
+          </div>
+          <div class="card-foot">
+            <code class="install">/plugin marketplace add daymade/claude-code-skills</code>
+            <a class="link" href="https://github.com/daymade/claude-code-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 3: AWESOME -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>聚合 / Awesome 列表 <span class="tag pink">DISCOVER</span></h2>
+        <p class="sub">想自己探索更多？这些是最值得 Star 的入口仓库。</p>
+      </div>
+    </div>
+
+    <div class="grid three">
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/VoltAgent/awesome-agent-skills" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">1000+ Skills</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/VoltAgent.png?size=48" alt=""/>
+            <span class="name">VoltAgent/awesome-agent-skills</span>
+          </div>
+          <h3>1000+ Agent Skills 大合集</h3>
+          <p class="desc">收录 Anthropic、Google Labs、Vercel、Stripe、Cloudflare、Netlify 等团队的官方 Skill，含游戏开发分类。</p>
+          <div class="card-foot">
+            <code class="install">awesome</code>
+            <a class="link" href="https://github.com/VoltAgent/awesome-agent-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/hesreallyhim/awesome-claude-code" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">最权威</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/hesreallyhim.png?size=48" alt=""/>
+            <span class="name">hesreallyhim/awesome-claude-code</span>
+          </div>
+          <h3>Claude Code 综合 Awesome</h3>
+          <p class="desc">包含 Skills、Hooks、Slash Commands、Agent 编排器、应用、插件等所有形态的 Claude Code 生态资源。</p>
+          <div class="card-foot">
+            <code class="install">awesome</code>
+            <a class="link" href="https://github.com/hesreallyhim/awesome-claude-code">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/sickn33/antigravity-awesome-skills" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">1400+</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/sickn33.png?size=48" alt=""/>
+            <span class="name">sickn33/antigravity-awesome-skills</span>
+          </div>
+          <h3>1400+ 跨工具 Skill 安装库</h3>
+          <p class="desc">兼容 Claude Code / Cursor / Codex CLI / Gemini CLI / Antigravity，含安装器 CLI、Bundle、工作流。</p>
+          <div class="card-foot">
+            <code class="install">installer cli</code>
+            <a class="link" href="https://github.com/sickn33/antigravity-awesome-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/alirezarezvani/claude-skills" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">263+ Plugins</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/alirezarezvani.png?size=48" alt=""/>
+            <span class="name">alirezarezvani/claude-skills</span>
+          </div>
+          <h3>跨 8 个编码 Agent 的 Skill 库</h3>
+          <p class="desc">263+ Skill + Agent 插件，覆盖工程、营销、产品、合规、C-Level 顾问。</p>
+          <div class="card-foot">
+            <code class="install">cross-agent</code>
+            <a class="link" href="https://github.com/alirezarezvani/claude-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/VoltAgent/awesome-claude-code-subagents" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">SubAgent</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/VoltAgent.png?size=48" alt=""/>
+            <span class="name">VoltAgent/awesome-claude-code-subagents</span>
+          </div>
+          <h3>含 game-developer 专家 SubAgent</h3>
+          <p class="desc">在 categories/07-specialized-domains/ 下有专门的 game-developer.md，定义了游戏开发子代理的角色和能力。</p>
+          <div class="card-foot">
+            <code class="install">subagent ref</code>
+            <a class="link" href="https://github.com/VoltAgent/awesome-claude-code-subagents">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-cover">
+          <img src="https://opengraph.githubassets.com/1/BehiSecc/awesome-claude-skills" alt="" onerror="this.style.display='none'"/>
+          <div class="overlay"></div>
+          <span class="pill">含 SkillCheck</span>
+        </div>
+        <div class="card-body">
+          <div class="repo">
+            <img src="https://github.com/BehiSecc.png?size=48" alt=""/>
+            <span class="name">BehiSecc/awesome-claude-skills</span>
+          </div>
+          <h3>带 SKILL.md 校验工具的清单</h3>
+          <p class="desc">收录 AlterLab_GameForge（34 个游戏开发 Skill）等，并提供 SkillCheck-Free 校验 SKILL.md 的结构、命名、语义。</p>
+          <div class="card-foot">
+            <code class="install">curated</code>
+            <a class="link" href="https://github.com/BehiSecc/awesome-claude-skills">查看 →</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COMBO -->
+  <section class="combo">
+    <h3>推荐组合用法</h3>
+    <p class="sub">单装一个 Skill 力量有限。下面是按场景搭配的"工作流"，可以直接照着装。</p>
+    <div class="combo-grid">
+
+      <div class="combo-item">
+        <div class="num">SCENARIO 01</div>
+        <h4>独立做 HTML5 2D 小游戏</h4>
+        <p><b style="color:#fff">主力：</b>Yakoub-ai/phaser4-gamedev<br/>
+        <b style="color:#fff">辅助：</b>OpusGameLabs/game-creator（流水线 + 像素画 + 程序化音频）<br/>
+        <b style="color:#fff">参考：</b>HermeticOrmus/claude-code-game-development 的简单游戏样例</p>
+      </div>
+
+      <div class="combo-item">
+        <div class="num">SCENARIO 02</div>
+        <h4>做 3D 互动品牌站</h4>
+        <p><b style="color:#fff">主力：</b>freshtechbro/claudedesignskills 的 <code>core-3d-animation</code> Bundle<br/>
+        <b style="color:#fff">追加：</b>dgreenheck/webgpu-claude-skill（要写 Shader 时）<br/>
+        <b style="color:#fff">滚动动画：</b>extended-3d-scroll Bundle（Locomotive + Vanta + Barba）</p>
+      </div>
+
+      <div class="combo-item">
+        <div class="num">SCENARIO 03</div>
+        <h4>团队多人开发中型游戏</h4>
+        <p><b style="color:#fff">骨架：</b>Donchitos/Claude-Code-Game-Studios（49 Agent 工作室）<br/>
+        <b style="color:#fff">引擎层：</b>按引擎选 phaser4-gamedev 或 webgpu-claude-skill<br/>
+        <b style="color:#fff">QA：</b>Studios 自带 hook 脚本 + 12 条 commit 校验</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>调研日期：2026-05-13 · 数据来源：GitHub 搜索、各仓库 README、Medium / KDnuggets / Snyk 评测文章</p>
+    <p style="margin-top:6px">报告由 Claude Code 自动生成 · 所有链接可直接点击跳转</p>
+  </footer>
+
+</div>
+</body>
+</html>

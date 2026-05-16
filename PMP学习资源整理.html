@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMP 学习资源整理 · GitHub 精选</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+    color: #24292f;
+    line-height: 1.7;
+    padding: 32px 16px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  header {
+    background: linear-gradient(135deg, #0969da 0%, #1f6feb 100%);
+    color: white;
+    padding: 40px 36px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(9, 105, 218, 0.2);
+    margin-bottom: 32px;
+  }
+  header h1 { font-size: 2em; margin-bottom: 10px; letter-spacing: 0.5px; }
+  header p { opacity: 0.92; font-size: 1.02em; }
+  .meta { margin-top: 14px; font-size: 0.88em; opacity: 0.85; }
+
+  h2 {
+    color: #0969da;
+    border-left: 4px solid #0969da;
+    padding-left: 12px;
+    margin: 36px 0 18px;
+    font-size: 1.4em;
+  }
+  h3 { color: #1f2328; margin: 18px 0 10px; font-size: 1.08em; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: white;
+    border: 1px solid #d1d9e0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.2s;
+  }
+  .card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    border-color: #0969da;
+  }
+  .card .repo-name {
+    font-weight: 600;
+    color: #0969da;
+    text-decoration: none;
+    font-size: 1.05em;
+    word-break: break-all;
+  }
+  .card .repo-name:hover { text-decoration: underline; }
+  .card .desc { color: #57606a; margin: 8px 0 10px; font-size: 0.94em; }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    background: #ddf4ff;
+    color: #0969da;
+    font-size: 0.78em;
+    padding: 3px 9px;
+    border-radius: 12px;
+  }
+  .tag.cn { background: #ffeef0; color: #cf222e; }
+  .tag.en { background: #dafbe1; color: #1a7f37; }
+  .tag.star { background: #fff8c5; color: #9a6700; }
+
+  .plan-section {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    margin: 24px 0;
+    border: 1px solid #d1d9e0;
+  }
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .week {
+    border-left: 3px solid #0969da;
+    padding: 12px 14px;
+    background: #f6f8fa;
+    border-radius: 0 8px 8px 0;
+  }
+  .week strong { color: #0969da; display: block; margin-bottom: 4px; }
+  .week ul { margin-left: 18px; font-size: 0.92em; color: #57606a; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #d1d9e0; }
+  th { background: #f6f8fa; color: #1f2328; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td a { color: #0969da; text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+
+  .tip-box {
+    background: #fff8c5;
+    border-left: 4px solid #d4a72c;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 0.95em;
+  }
+  .warn-box {
+    background: #ffebe9;
+    border-left: 4px solid #cf222e;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 0.95em;
+  }
+
+  footer {
+    text-align: center;
+    color: #57606a;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #d1d9e0;
+    font-size: 0.88em;
+  }
+  ul.checklist { list-style: none; padding-left: 0; }
+  ul.checklist li {
+    padding: 6px 0 6px 26px;
+    position: relative;
+  }
+  ul.checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #1a7f37;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>📘 PMP 学习资源整理</h1>
+  <p>GitHub 精选仓库 + 学习计划 + 备考路线（针对 2026 新版考纲）</p>
+  <div class="meta">整理日期：2026-05-16 · 适用：PMP 考试备考者</div>
+</header>
+
+<div class="warn-box">
+  <strong>⚠️ 2026 新版考纲要点：</strong>新增「AI for Project Professionals」内容，商业环境域占比从 8% 上升至 26%。备考资料请优先选择 PMBOK 第 7 版 + 敏捷实践指南，并关注 PMI 官方 ECO（Exam Content Outline）。
+</div>
+
+<h2>🌟 一、GitHub 优质学习仓库</h2>
+
+<h3>中文资源</h3>
+<div class="card-grid">
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/lulongwen/PMP" target="_blank">lulongwen/PMP</a>
+    <div class="desc">卢珑文学习 PMP 资料，覆盖 PMP / ACP 敏捷 / 系统架构师 / 信息化战略 / 领导力，结构完整。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">PMBOK 框架</span><span class="tag star">★ 8</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/afresh/pmi-pmp" target="_blank">afresh/pmi-pmp</a>
+    <div class="desc">按 PMBOK 第六版完整组织的笔记，覆盖 10 大知识领域（含 README 形式的中文解读）。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">十大知识领域</span><span class="tag">笔记</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/panshipmp/pmbok6th" target="_blank">panshipmp/pmbok6th</a>
+    <div class="desc">PMBOK 第六版知识整理，提供 MySQL 和 Excel 导出版本，方便检索与背诵 ITTO。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">ITTO</span><span class="tag">数据库</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/emacle/pmp" target="_blank">emacle/pmp</a>
+    <div class="desc">含 PMBOK 第 6 版 PDF、思维导图学习记录、8 套线上模考。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">思维导图</span><span class="tag">模考</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/zhangzhikai/MyGitPDFRepository" target="_blank">zhangzhikai/MyGitPDFRepository</a>
+    <div class="desc">PMBOK 第六版中文 PDF（带完整目录），适合作为正式教材。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">PDF</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/zgqallen/TechBooks" target="_blank">zgqallen/TechBooks</a>
+    <div class="desc">PMBOK 第六版官方中文版 PDF（在 TechBooks 综合仓库内）。</div>
+    <div class="tags"><span class="tag cn">中文</span><span class="tag">官方版本</span></div>
+  </div>
+
+</div>
+
+<h3 style="margin-top:24px;">英文 / 国际资源</h3>
+<div class="card-grid">
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/Christophersabiti/PMP-Repository" target="_blank">Christophersabiti/PMP-Repository</a>
+    <div class="desc">结构化备考仓库，含 PMBOK 6/7/8 版、Scrum Guide、2026 新考纲 PDF、候选人路线图、流程组实践指南。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">2026 考纲</span><span class="tag">体系化</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/aparnakup/PMP-Exam-Tips-Resources-Practice-tests" target="_blank">aparnakup/PMP-Exam-Tips-Resources-Practice-tests</a>
+    <div class="desc">考过 PMP 的作者分享情景题策略，覆盖敏捷 / 混合 / 预测型，含推荐资源与 4-5 周学习路线。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">情景题</span><span class="tag">学习路线</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://dustinober1.github.io/PMP-2026/" target="_blank">dustinober1/PMP-2026</a>
+    <div class="desc">基于 2026 新考纲的在线备考站点，含模拟题与知识点速查。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">2026 新版</span><span class="tag">在线</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/PacktPublishing/The-Simplest-Guide-to-Project-Management-and-PMI-PMP-Certification-Exam" target="_blank">PacktPublishing/The-Simplest-Guide...</a>
+    <div class="desc">Packt 出版的 PMP 视频课程配套代码 / 素材，适合搭配视频学习。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">视频课配套</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/topics/pmp-certification" target="_blank">GitHub Topic: pmp-certification</a>
+    <div class="desc">PMP 主题聚合页，可按 stars / 更新时间持续发现新仓库。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">聚合</span></div>
+  </div>
+
+  <div class="card">
+    <a class="repo-name" href="https://github.com/topics/pmbok" target="_blank">GitHub Topic: pmbok</a>
+    <div class="desc">PMBOK 主题聚合页，可找到各国语言的整理笔记。</div>
+    <div class="tags"><span class="tag en">英文</span><span class="tag">聚合</span></div>
+  </div>
+
+</div>
+
+<h2>🎴 二、Anki 闪卡资源（强烈推荐做记忆训练）</h2>
+<table>
+  <thead>
+    <tr><th>资源</th><th>说明</th><th>链接</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PMBOK Guide 6e</td>
+      <td>覆盖第六版 PMBOK 项目管理知识体系</td>
+      <td><a href="https://ankiweb.net/shared/info/1918157364" target="_blank">AnkiWeb</a></td>
+    </tr>
+    <tr>
+      <td>PMP / CAPM - PMBOK 7th</td>
+      <td>第七版（原则 + 绩效域），对齐当前考纲</td>
+      <td><a href="https://ankiweb.net/shared/info/201627782" target="_blank">AnkiWeb</a></td>
+    </tr>
+    <tr>
+      <td>PMP 2019 6th Edition ITTO / Processes</td>
+      <td>专门用于背诵 49 个过程及其 ITTO</td>
+      <td><a href="https://ankiweb.net/shared/info/2115418494" target="_blank">AnkiWeb</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>🗓️ 三、推荐 8-10 周备考计划</h2>
+<div class="plan-section">
+  <p style="margin-bottom:12px;">综合 aparnakup 和多位通过者经验，结合 2026 新考纲调整：</p>
+  <div class="week-grid">
+    <div class="week">
+      <strong>Week 1-2 · 打地基</strong>
+      <ul>
+        <li>通读 PMBOK 第 7 版</li>
+        <li>过一遍 ECO 2026 考纲</li>
+        <li>建立 Anki 牌组</li>
+      </ul>
+    </div>
+    <div class="week">
+      <strong>Week 3-4 · 知识体系</strong>
+      <ul>
+        <li>读敏捷实践指南</li>
+        <li>看 Andrew Ramdayal / Ricardo Vargas 视频</li>
+        <li>整理思维导图</li>
+      </ul>
+    </div>
+    <div class="week">
+      <strong>Week 5-6 · 题海训练</strong>
+      <ul>
+        <li>Skillcertpro 900 题</li>
+        <li>每天 50-100 题，错题归档</li>
+        <li>目标正确率 75%+</li>
+      </ul>
+    </div>
+    <div class="week">
+      <strong>Week 7-8 · 模考冲刺</strong>
+      <ul>
+        <li>整套 180 题计时模考 × 4-5 套</li>
+        <li>正确率稳定 80%+</li>
+        <li>专攻情景判断 / 敏捷场景</li>
+      </ul>
+    </div>
+    <div class="week">
+      <strong>Week 9 · 弱点扫尾</strong>
+      <ul>
+        <li>错题二刷</li>
+        <li>商业环境域 + AI 新增内容</li>
+        <li>冲突管理 / 干系人专题</li>
+      </ul>
+    </div>
+    <div class="week">
+      <strong>Week 10 · 考前调整</strong>
+      <ul>
+        <li>每天 1 套模考保持手感</li>
+        <li>休息 + 调整作息</li>
+        <li>熟悉 Pearson VUE 考试流程</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h2>💡 四、核心备考策略（来自通过者经验）</h2>
+<ul class="checklist">
+  <li><strong>抓三大域占比</strong>：人员 42%、流程 50%、商业环境 8%（2026 后商业环境上升至 26%）。</li>
+  <li><strong>PMI-ism 思维方式</strong>：选「最主动、最专业、最服务型领导」的选项，而不是最快或最便宜。</li>
+  <li><strong>情景题套路</strong>：先判断项目方法论（预测/敏捷/混合），再判断所处阶段，再判断该谁负责。</li>
+  <li><strong>敏捷比重高</strong>：~50% 题目涉及敏捷或混合，务必吃透 Scrum + Kanban + SAFe 基础。</li>
+  <li><strong>错题优先</strong>：错题二刷价值远高于刷新题，建议建立电子错题本。</li>
+  <li><strong>不要死记 ITTO</strong>：第 7 版后考试不再死抠 ITTO，理解原则比记忆更重要。</li>
+</ul>
+
+<div class="tip-box">
+  <strong>💰 申请考试前提醒：</strong>需 35 PDU 培训证明（建议选 PMI 授权 ATP 机构）+ 项目管理工时填报（CAPM 持有者无需工时）。中国大陆考生还需 PMI 中国代理机构办理报名。
+</div>
+
+<h2>🔗 五、官方 / 配套资源（非 GitHub）</h2>
+<table>
+  <thead><tr><th>资源</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td><a href="https://www.pmi.org/certifications/project-management-pmp" target="_blank">PMI 官网 PMP 页面</a></td><td>报名、考纲、官方说明</td></tr>
+    <tr><td><a href="https://www.chinapmp.cn/" target="_blank">PMI 中国官网</a></td><td>中文报名、考点预约</td></tr>
+    <tr><td>Andrew Ramdayal Udemy 35 PDU</td><td>主流的英文备考视频课 + PDU</td></tr>
+    <tr><td>Ricardo Vargas YouTube</td><td>免费高质量项目管理讲解</td></tr>
+    <tr><td>Skillcertpro 900 题库</td><td>题量大、解析详细（付费推荐）</td></tr>
+  </tbody>
+</table>
+
+<footer>
+  © 2026-05-16 · PMP 学习资源整理 · 数据来自 GitHub 公开仓库与社区分享，仅供学习参考<br>
+  考试政策与考纲请以 PMI 官网为准
+</footer>
+
+</div>
+</body>
+</html>

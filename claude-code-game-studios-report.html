@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude-Code-Game-Studios 调研报告</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1d2330;
+    --text: #e6e8ee;
+    --muted: #97a0b3;
+    --accent: #f59e0b;
+    --accent-2: #60a5fa;
+    --green: #34d399;
+    --border: #2a3142;
+    --code-bg: #0b0d12;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 28px 80px;
+  }
+  header.hero {
+    background: linear-gradient(135deg, #1a1f2e 0%, #2b1a1a 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(245,158,11,0.25), transparent 70%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 34px;
+    margin: 0 0 12px;
+    line-height: 1.25;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 720px;
+  }
+  .badges {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 18px;
+  }
+  .badge {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+  .badge.accent { color: var(--accent); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+  .badge.blue { color: var(--accent-2); border-color: rgba(96,165,250,0.4); background: rgba(96,165,250,0.08); }
+  .badge.green { color: var(--green); border-color: rgba(52,211,153,0.4); background: rgba(52,211,153,0.08); }
+
+  section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 22px;
+  }
+  h2 {
+    font-size: 22px;
+    margin: 0 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2 .num {
+    display: inline-flex;
+    width: 28px; height: 28px;
+    align-items: center; justify-content: center;
+    background: var(--accent);
+    color: #1a1109;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  h3 { font-size: 17px; margin: 18px 0 8px; color: var(--accent-2); }
+  p { margin: 8px 0; color: var(--text); }
+  ul { padding-left: 22px; }
+  ul li { margin: 4px 0; }
+  code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: #ffd9a0;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code { background: transparent; border: none; padding: 0; color: #cfe3ff; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .card .label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .card .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 4px 0;
+  }
+  .card .desc { color: var(--muted); font-size: 13px; }
+
+  .tier {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 14px;
+    padding: 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 8px 0;
+  }
+  .tier .tier-label {
+    font-weight: 700;
+    color: var(--accent);
+    border-right: 1px solid var(--border);
+    padding-right: 10px;
+  }
+
+  .case {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 14px 0;
+  }
+  .case h3 { margin-top: 0; color: var(--text); }
+  .case .meta {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin: 6px 0 10px;
+  }
+  .case .meta span {
+    font-size: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: var(--muted);
+  }
+  .case a { color: var(--accent-2); text-decoration: none; }
+  .case a:hover { text-decoration: underline; }
+
+  .note {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: #fde6b8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 14px;
+    margin: 10px 0 18px;
+  }
+  .note strong { color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 30px;
+  }
+  footer a { color: var(--accent-2); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <div class="eyebrow">调研报告 · 2026-05-16</div>
+    <h1>Donchitos / Claude-Code-Game-Studios</h1>
+    <p class="subtitle">把 Claude Code 单个 session 变成一个完整的"游戏开发工作室"——49 个分工明确的 AI Agent、73 个 slash skill、12 个自动化质量门，模拟真实游戏工作室的层级与协作流。</p>
+    <div class="badges">
+      <span class="badge accent">MIT License</span>
+      <span class="badge blue">Claude Code CLI</span>
+      <span class="badge green">Godot 4 / Unity / UE5</span>
+      <span class="badge">Solo Indie / 小团队</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span>项目是什么</h2>
+    <p><strong>Claude-Code-Game-Studios</strong> 是 GitHub 用户 <code>Donchitos</code> 开源的一套 Claude Code 配置模板，把"和 AI 写游戏"从随机的对话式开发，升级为带组织结构的工作室协作。</p>
+    <p>它的核心思路是：游戏开发其实是一个跨学科协作的工程（策划/程序/美术/音频/QA/制作人），单一 AI 助手很容易在某个领域走偏。所以它把单个 Claude Code session 拆成 <strong>49 个有明确职责边界的 subagent</strong>，再用 <strong>73 个 slash skill</strong> 串联完整研发流水线——从概念头脑风暴一直到发布检查。</p>
+    <p>核心原则一句话：<em>「User-driven collaboration, not autonomous execution.」</em>——Agent 不会擅自动作，而是 <strong>提问 → 给选项 → 等决策 → 出草稿 → 等批准</strong>。</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">AI Agents</div>
+        <div class="value">49</div>
+        <div class="desc">分三层组织（导演 / 部门主管 / 专家）</div>
+      </div>
+      <div class="card">
+        <div class="label">Slash Skills</div>
+        <div class="value">73</div>
+        <div class="desc">覆盖完整研发流水线</div>
+      </div>
+      <div class="card">
+        <div class="label">质量门 Hooks</div>
+        <div class="value">12</div>
+        <div class="desc">提交、命名、JSON、文档自动校验</div>
+      </div>
+      <div class="card">
+        <div class="label">编码规范规则</div>
+        <div class="value">11</div>
+        <div class="desc">按目录强制执行</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>Agent 组织架构</h2>
+    <p>系统模拟了真实游戏工作室的三层结构：</p>
+
+    <div class="tier">
+      <div class="tier-label">Tier 1<br>导演层</div>
+      <div>
+        <strong>Creative Director / Technical Director / Producer</strong><br>
+        守护项目愿景、技术底线和进度统筹。跨部门冲突通过 Producer 协调。
+      </div>
+    </div>
+    <div class="tier">
+      <div class="tier-label">Tier 2<br>部门主管</div>
+      <div>
+        <strong>Design Lead / Programming Lead / Art Lead / Audio Lead / Narrative Lead / QA Lead</strong><br>
+        各自负责领域的标准与质量，向上汇报、向下分派任务。
+      </div>
+    </div>
+    <div class="tier">
+      <div class="tier-label">Tier 3<br>专家执行</div>
+      <div>
+        引擎专家（Godot 4 / Unity DOTS / UE5 GAS）、Shader / VFX / 网络同步 / UI Toolkit / 关卡设计师 / 系统设计师 / 测试工程师等具体岗位。
+      </div>
+    </div>
+
+    <h3>协作约束</h3>
+    <ul>
+      <li><strong>垂直委派</strong>：导演 → 主管 → 专家，越级要走流程</li>
+      <li><strong>横向协商</strong>：同层级 Agent 可平等协商，跨部门改动必须经过 Producer</li>
+      <li><strong>领域边界</strong>：Agent 不能擅自修改自己职责外的文件</li>
+      <li><strong>写文件前必问</strong>：<em>"May I write this to [filepath]?"</em></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>工作流与关键命令</h2>
+    <p>所有交互都遵循统一协议：<strong>Question → Options → Decision → Draft → Approval</strong>。</p>
+
+    <h3>常用 slash skill</h3>
+    <table>
+      <thead><tr><th>命令</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td><code>/start</code></td><td>新项目引导，按阶段推进</td></tr>
+        <tr><td><code>/brainstorm</code></td><td>玩法/世界观/核心循环头脑风暴</td></tr>
+        <tr><td><code>/design-system</code></td><td>设计某个系统（战斗、合成、技能树…）</td></tr>
+        <tr><td><code>/setup-engine</code></td><td>初始化引擎模板（Godot/Unity/UE5）</td></tr>
+        <tr><td><code>/project-stage-detect</code></td><td>判断当前项目处于哪个阶段</td></tr>
+        <tr><td><code>/gate-check</code></td><td>阶段切换前的质量门检查</td></tr>
+        <tr><td><code>/release-checklist</code></td><td>发布前合规与体验检查</td></tr>
+        <tr><td><code>/launch-checklist</code></td><td>正式上线检查清单</td></tr>
+      </tbody>
+    </table>
+
+    <h3>典型目录结构</h3>
+<pre><code>.claude/        # 49 agents · 73 skills · 12 hooks · 11 rules · 41 templates
+src/            # 游戏源码
+assets/         # 美术、音频、VFX、数据
+design/         # GDD、叙事、关卡设计
+tests/          # 单元、集成、playtest
+production/     # 冲刺计划、里程碑、发布跟踪</code></pre>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>支持的引擎</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="label">Engine</div>
+        <div class="value" style="font-size:18px;color:var(--accent-2);">Godot 4</div>
+        <div class="desc">GDScript · Shader · GDExtension</div>
+      </div>
+      <div class="card">
+        <div class="label">Engine</div>
+        <div class="value" style="font-size:18px;color:var(--accent-2);">Unity</div>
+        <div class="desc">DOTS/ECS · VFX Graph · UI Toolkit</div>
+      </div>
+      <div class="card">
+        <div class="label">Engine</div>
+        <div class="value" style="font-size:18px;color:var(--accent-2);">Unreal Engine 5</div>
+        <div class="desc">GAS · Blueprints · Replication</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>快速上手</h2>
+<pre><code># 前置：Git + Claude Code CLI（可选 jq、Python 3）
+git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
+cd my-game
+claude
+/start</code></pre>
+    <p><code>/start</code> 会引导你走完概念 → 设计 → 实现 → 测试 → 发布的各阶段，也可以直接跳到 <code>/brainstorm</code>、<code>/setup-engine</code> 等。</p>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>用它做出来的游戏案例</h2>
+
+    <div class="note">
+      <strong>说明：</strong>该仓库的 <code>docs/examples/</code> 目录主要是<em>「会话脚本范例」</em>（如 session-design-crafting-system、session-implement-combat-damage 等），演示了一个 Godot 4 生存游戏的协作流程，但<strong>并没有公开发布的成品游戏 showcase</strong>。仓库 Discussions 区还有一个 issue 标题就叫 <em>"Any real game output?"</em>。<br><br>
+      下面列出的是更广义的 <strong>Claude Code 游戏开发案例</strong>，作为参考它能做什么。框架本身是为这类项目设计的协作脚手架。
+    </div>
+
+    <div class="case">
+      <h3>① 仓库内置示例：Godot 4 生存游戏（教程式 session 脚本）</h3>
+      <div class="meta">
+        <span>Godot 4</span><span>仓库官方</span><span>协作流程演示</span>
+      </div>
+      <p>覆盖合成系统、战斗伤害、移动、HUD、库存、技能树等模块，展示了从 <em>设计讨论 → 实现 → gate-check</em> 的全链路对话。位于 <code>docs/examples/</code>，是理解整套 Agent 协作最直接的材料。</p>
+    </div>
+
+    <div class="case">
+      <h3>② 9 款经典街机游戏复刻（Julien Simon · 约 4 小时）</h3>
+      <div class="meta">
+        <span>Vanilla JS</span><span>Claude Code</span><span>1971–1981</span>
+      </div>
+      <p>用 Claude Code 在约 4 小时内复刻了 9 款经典街机游戏（Computer Space、Pong、Space Invaders 等），全部为原生 JavaScript。验证了 Claude 在小型完整游戏（含物理、输入、计分）上的端到端能力。</p>
+      <a href="https://julsimon.medium.com/coding-classic-arcade-games-with-claude-ff755014ccce" target="_blank">→ 案例文章</a>
+    </div>
+
+    <div class="case">
+      <h3>③ One-Button Game 生成集（abagames）</h3>
+      <div class="meta">
+        <span>JavaScript</span><span>Claude Opus 4.5</span><span>16 款单键游戏</span>
+      </div>
+      <p>仅通过一句 "Create a game" prompt 让 Claude 生成 16 款单键操作小游戏，再以 game-feel 指引迭代加 juice（屏幕震动、粒子、缓动）。展示了 Game Studios 框架里 <code>/brainstorm</code> + <code>design-lead</code> + <code>vfx-specialist</code> 这种组合能放大的方向。</p>
+      <a href="https://github.com/abagames/claude-one-button-game-creation" target="_blank">→ GitHub 仓库</a>
+    </div>
+
+    <div class="case">
+      <h3>④ 复古太空射击游戏（XDA Developers 报道）</h3>
+      <div class="meta">
+        <span>Web</span><span>波次敌人 · 道具 · Boss</span>
+      </div>
+      <p>一位作者用 Claude Code "vibe code" 出了完整的波次射击游戏，包含敌人 AI、能力提升、Boss 战。文章标题：<em>"I vibe-coded a fully functional game with Claude Code, and it doesn't look vibe-coded at all"</em>。这是 Game Studios 框架最适配的目标体量。</p>
+      <a href="https://www.xda-developers.com/i-vibe-coded-a-fully-functional-game-with-claude-code-and-it-doesn't-look-vibe-coded-at-all/" target="_blank">→ 案例文章</a>
+    </div>
+
+    <div class="case">
+      <h3>⑤ GunZ: The Duel 浏览器化移植（Sutead · 2026-03）</h3>
+      <div class="meta">
+        <span>C++ → WebAssembly</span><span>WebGL</span><span>2003 老游戏</span>
+      </div>
+      <p>把 2003 年的 Windows TPS《GunZ》通过 WebAssembly + WebGL 完整搬进浏览器，作者称代码改动量极小，主要靠 Claude Code 处理引擎适配与 API 替换。这是一个"老项目维护/移植"方向的案例，对应框架里的 <code>session-adopt-brownfield</code> 工作流。</p>
+      <a href="https://medium.com/@sutead/claude-code-let-me-bring-a-20-year-old-game-to-the-browser-with-minimal-code-changes-51a954ce882e" target="_blank">→ 案例文章</a>
+    </div>
+
+    <div class="case">
+      <h3>⑥ 20 分钟复古小游戏（Creator Economy 教程）</h3>
+      <div class="meta">
+        <span>Web</span><span>新手友好</span><span>20 分钟</span>
+      </div>
+      <p>一篇手把手教程，从 0 开始用 Claude Code 做一个可玩的复古风格小游戏。适合作为 Claude-Code-Game-Studios <code>/start</code> 工作流的对照参考。</p>
+      <a href="https://creatoreconomy.so/p/build-a-retro-game-with-claude-code-in-20-min" target="_blank">→ 教程</a>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span>具体的 HTML 游戏案例（含可玩链接）</h2>
+    <div class="note">
+      下面这些都是用 Claude Code（或 Claude AI）做出来的 <strong>纯 HTML / Canvas / Vanilla JS</strong> 浏览器游戏，全部可直接在浏览器里玩，无需安装。
+    </div>
+
+    <div class="case">
+      <h3>① Grumbulus — 风暴云打城市</h3>
+      <div class="meta">
+        <span>HTML5 Canvas</span><span>Vanilla JS (~15,000 行)</span><span>Web Audio API</span><span>2 个晚上完成</span>
+      </div>
+      <p>玩家操控一片愤怒的风暴云，用 6 种天气攻击（雨、闪电、霜冻、雾、极光、球状闪电）轰炸城市。包含 24 种行人 AI、12 种道具、13 项升级、35 个成就、波次 + 突变机制、10 个隐藏组合技（含「召唤雷神」）。</p>
+      <p>所有像素全 Canvas 手绘，所有音效用 Web Audio API 程序化合成，<strong>零外部资源、零框架</strong>。25 个 JS 文件、约 15000 行代码，作者跟 Claude 协作两个晚上完成。</p>
+      <a href="https://cloud-heavy-industries.com/grumbulus/" target="_blank">→ 立即试玩</a>
+    </div>
+
+    <div class="case">
+      <h3>② 10 款经典街机重制（WotAI）</h3>
+      <div class="meta">
+        <span>Next.js</span><span>HTML Canvas</span><span>带排行榜</span>
+      </div>
+      <p>团队用 Claude Code「用自然语言生成代码」重制了 10 款经典街机游戏并部署到一个站点：Pac-Man、Tetris、Space Invaders、Snake、Flappy Bird、Breakout、Asteroids、Frogger、Doodle Jump、Sudoku。没用 Unity 或 Phaser，全部 Next.js + HTML Canvas。</p>
+      <a href="https://games.wotai.co" target="_blank">→ games.wotai.co</a>
+    </div>
+
+    <div class="case">
+      <h3>③ AI Mini Snake — 加强版贪吃蛇</h3>
+      <div class="meta">
+        <span>单文件 HTML</span><span>Vanilla JS</span><span>100% AI 生成</span>
+      </div>
+      <p>5 种食物（普通苹果 / 金苹果 / 钻石 / 加速 / 减速）、粒子特效、毛玻璃 UI、localStorage 高分榜、渐进难度。桌面方向键控制，手机支持手势滑动。代码全部塞在一个 <code>index.html</code> 里。</p>
+      <a href="https://minisnake.vercel.app/" target="_blank">→ 立即试玩</a> · <a href="https://github.com/solcanine/claude-ai-mini-snake-game" target="_blank">→ 源码</a>
+    </div>
+
+    <div class="case">
+      <h3>④ Artemis II: Journey Around the Moon</h3>
+      <div class="meta">
+        <span>HTML5 Canvas</span><span>Vanilla JS (~620 行)</span><span>Web Audio API</span>
+      </div>
+      <p>横版太空生存：闪避陨石与卫星、收集燃料、近距闪避 combo、5 段任务、等级系统、移动端触控。一位作者一天内用 Claude Code CLI 做出来的三款之一。</p>
+      <a href="https://linuxbeast.com/artemis/" target="_blank">→ 立即试玩</a>
+    </div>
+
+    <div class="case">
+      <h3>⑤ Escape the Strait: Warzone Survival</h3>
+      <div class="meta">
+        <span>HTML5 Canvas</span><span>~730 行</span><span>4 难度 · Boss 战</span>
+      </div>
+      <p>海上突围射击：跨越 4 个战区、躲避追踪导弹与无人机、Boss 战、20 级武器升级、4 种难度模式。</p>
+      <a href="https://linuxbeast.com/sea-survival/" target="_blank">→ 立即试玩</a>
+    </div>
+
+    <div class="case">
+      <h3>⑥ Drone Strike: Survival Mission</h3>
+      <div class="meta">
+        <span>HTML5 Canvas</span><span>~600 行</span><span>6 个任务目标</span>
+      </div>
+      <p>无人机任务玩法：6 个可选目标、躲避 SAM 防空 / 高射炮、释放热焰诱饵、雷达拦截机。同样作者一天三作之一，验证了「同一套范式可以快速产出多款不同题材小游戏」。</p>
+      <a href="https://linuxbeast.com/drone-strike/" target="_blank">→ 立即试玩</a>
+    </div>
+
+    <div class="case">
+      <h3>⑦ Code Defenders — 给程序员看的塔防（itch.io）</h3>
+      <div class="meta">
+        <span>HTML5 Canvas</span><span>Vanilla HTML/CSS/JS</span><span>itch.io 浏览器游玩</span>
+      </div>
+      <p>主题是「保护代码仓库不被劣质 PR 合进 main」：部署 reviewer 拦截 junior dev、AI agent、"10x rockstar" 等敌人。15 个 sprint，三阶段成长（Startup / Series A / Public）。作者在页面上说明了使用 AI 辅助生成代码，无任何框架依赖。</p>
+      <a href="https://keggdirdle.itch.io/code-defenders" target="_blank">→ 在 itch.io 试玩</a>
+    </div>
+
+    <h3 style="margin-top:24px;">这些案例的共性</h3>
+    <ul>
+      <li><strong>零依赖 / 零框架</strong>是主流：HTML5 Canvas + 原生 JS + Web Audio API 三件套就能撑起完整玩法</li>
+      <li><strong>规模可控</strong>：从 600 行小游戏到 15000 行重度向，Claude Code 都能 hold 得住</li>
+      <li><strong>音效用 Web Audio 程序化合成</strong>，可以完全跳过资源管线，开发周期从天计而非周计</li>
+      <li><strong>单文件 / 静态部署</strong>极常见，Vercel / Cloudflare Pages / itch.io 直接上线</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">8</span>适合谁 / 不适合谁</h2>
+    <h3>✅ 适合</h3>
+    <ul>
+      <li>独立开发者 / 2–4 人小团队，希望"AI 当成员工"做游戏</li>
+      <li>项目体量在 <em>小到中型</em>（街机、Roguelike、平台跳跃、生存原型、复古射击）</li>
+      <li>想要 <em>有组织</em> 而不是 <em>放飞</em> 的 AI 协作流程</li>
+      <li>用 Godot 4 / Unity / UE5 中的任一引擎</li>
+    </ul>
+    <h3>⚠️ 谨慎使用</h3>
+    <ul>
+      <li>大型 3A 项目（49 个 Agent 仍然只是单 session 内的角色分工，无法替代真实团队）</li>
+      <li>已经有非常成熟自研工作流的团队（迁移成本可能高于收益）</li>
+      <li>需要"无人值守自动开发"的场景（这个框架刻意要求人工批准每一步）</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">9</span>资源链接</h2>
+    <ul>
+      <li>主仓库：<a href="https://github.com/Donchitos/Claude-Code-Game-Studios" target="_blank">github.com/Donchitos/Claude-Code-Game-Studios</a></li>
+      <li>CLAUDE.md（核心配置）：<a href="https://github.com/Donchitos/Claude-Code-Game-Studios/blob/main/CLAUDE.md" target="_blank">CLAUDE.md</a></li>
+      <li>会话示例：<a href="https://github.com/Donchitos/Claude-Code-Game-Studios/tree/main/docs/examples" target="_blank">docs/examples/</a></li>
+      <li>讨论区：<a href="https://github.com/Donchitos/Claude-Code-Game-Studios/discussions" target="_blank">GitHub Discussions</a></li>
+      <li>License：MIT</li>
+    </ul>
+  </section>
+
+  <footer>
+    报告由 Claude 整理 · 数据截至 2026-05-16 · 仓库 / 案例链接以官方为准
+  </footer>
+
+</div>
+</body>
+</html>

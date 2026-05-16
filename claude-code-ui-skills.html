@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code · UI 设计 Skills 调研</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-soft:#111114;
+    --card:#15151a;
+    --card-2:#1a1a21;
+    --border:#23232b;
+    --border-soft:#1d1d24;
+    --text:#e8e8ed;
+    --text-dim:#9a9aa6;
+    --text-mute:#6a6a78;
+    --accent:#d97757; /* Claude terracotta */
+    --accent-2:#f4a672;
+    --green:#7ee787;
+    --purple:#a78bfa;
+    --blue:#60a5fa;
+    --pink:#f472b6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55}
+  body{
+    background:
+      radial-gradient(1200px 700px at 90% -10%, rgba(217,119,87,.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, rgba(167,139,250,.06), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:60px 32px 120px}
+
+  /* Header */
+  header{margin-bottom:64px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 12px;border:1px solid var(--border);border-radius:999px;
+    background:var(--card);font-size:12px;color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
+    margin-bottom:24px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  h1{
+    font-size:clamp(36px,5vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1.05;
+    margin-bottom:20px;
+  }
+  h1 .grad{
+    background:linear-gradient(120deg,var(--accent),var(--accent-2) 60%,#fff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lead{font-size:18px;color:var(--text-dim);max-width:780px}
+  .lead code{
+    background:var(--card);padding:2px 8px;border-radius:6px;
+    font-family:'JetBrains Mono',monospace;font-size:.88em;color:var(--accent-2);
+    border:1px solid var(--border);
+  }
+
+  /* Toc */
+  .toc{
+    margin-top:36px;display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .toc a{
+    font-size:13px;color:var(--text-dim);text-decoration:none;
+    padding:8px 14px;border:1px solid var(--border);border-radius:999px;
+    background:var(--card);transition:.2s;
+  }
+  .toc a:hover{color:var(--text);border-color:var(--accent);background:rgba(217,119,87,.06)}
+
+  /* Section */
+  section{margin-top:80px}
+  .section-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:24px;
+    margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-soft);
+  }
+  .section-head h2{font-size:32px;font-weight:700;letter-spacing:-.02em}
+  .section-head .num{
+    font-family:'JetBrains Mono',monospace;color:var(--text-mute);font-size:13px;
+  }
+
+  /* Skill card */
+  .skill{
+    background:linear-gradient(180deg,var(--card),var(--card-2));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:32px;
+    margin-bottom:24px;
+    transition:.25s;
+    position:relative;overflow:hidden;
+  }
+  .skill::before{
+    content:"";position:absolute;inset:0;border-radius:18px;
+    background:linear-gradient(120deg,transparent 60%,rgba(217,119,87,.05));
+    pointer-events:none;opacity:0;transition:.3s;
+  }
+  .skill:hover{border-color:#2e2e38;transform:translateY(-2px)}
+  .skill:hover::before{opacity:1}
+
+  .skill-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:14px}
+  .skill h3{font-size:24px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .skill h3 .badge{
+    font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;letter-spacing:.04em;
+    text-transform:uppercase;font-family:'JetBrains Mono',monospace;
+  }
+  .badge.official{background:rgba(217,119,87,.15);color:var(--accent-2);border:1px solid rgba(217,119,87,.3)}
+  .badge.community{background:rgba(126,231,135,.1);color:var(--green);border:1px solid rgba(126,231,135,.25)}
+  .badge.popular{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+
+  .skill .links{display:flex;gap:10px;flex-wrap:wrap}
+  .skill .links a{
+    font-size:12px;color:var(--text-dim);text-decoration:none;
+    padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-soft);
+    font-family:'JetBrains Mono',monospace;transition:.2s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .skill .links a:hover{color:var(--accent-2);border-color:var(--accent)}
+  .skill .links a.primary{color:var(--accent-2);border-color:rgba(217,119,87,.35)}
+
+  .desc{color:var(--text-dim);font-size:15px;margin:6px 0 22px}
+  .desc strong{color:var(--text)}
+
+  .meta{
+    display:flex;flex-wrap:wrap;gap:24px;
+    padding:14px 18px;background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:12px;
+    margin-bottom:22px;
+  }
+  .meta .item{display:flex;flex-direction:column;gap:2px}
+  .meta .k{font-size:11px;color:var(--text-mute);font-family:'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+  .meta .v{font-size:15px;color:var(--text);font-weight:600}
+  .meta .v .accent{color:var(--accent-2)}
+
+  /* Case list */
+  .cases-title{
+    font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-mute);
+    letter-spacing:.08em;text-transform:uppercase;margin:18px 0 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .cases-title::before{content:"";width:18px;height:1px;background:var(--accent)}
+
+  .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+  .case{
+    background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:10px;
+    padding:12px 14px;transition:.2s;
+  }
+  .case:hover{border-color:#2e2e38;background:#16161c}
+  .case .name{font-weight:600;font-size:14px;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+  .case .name .dot{width:6px;height:6px;border-radius:50%}
+  .case .feat{font-size:12.5px;color:var(--text-dim);line-height:1.5}
+
+  /* Aesthetic showcase 11 styles */
+  .aes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .aes{
+    border-radius:12px;padding:18px;min-height:140px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    border:1px solid var(--border-soft);position:relative;overflow:hidden;
+    transition:.25s;cursor:default;
+  }
+  .aes:hover{transform:translateY(-3px)}
+  .aes .num{font-family:'JetBrains Mono',monospace;font-size:11px;opacity:.6}
+  .aes .nm{font-size:16px;font-weight:700;letter-spacing:-.01em;margin-top:auto}
+  .aes .ft{font-size:11.5px;margin-top:4px;opacity:.75;line-height:1.4}
+
+  /* 11 aesthetic styles */
+  .a1{background:#f5f5f0;color:#111}
+  .a2{background:#e0e5ec;color:#3a3a4a;box-shadow:inset 6px 6px 12px #b8bcc4,inset -6px -6px 12px #fff}
+  .a3{background:linear-gradient(135deg,#ff6ec7,#7873f5,#4ade80);color:#fff}
+  .a3::after{content:"";position:absolute;left:8px;right:8px;top:8px;bottom:8px;background:rgba(255,255,255,.15);border-radius:8px;border:1px solid rgba(255,255,255,.3);pointer-events:none}
+  .a3 .num,.a3 .nm,.a3 .ft{position:relative;z-index:1}
+  .a4{background:#fef200;color:#000;border:4px solid #000;box-shadow:6px 6px 0 #000}
+  .a5{background:linear-gradient(180deg,#ffd4e5,#c8e7ff);color:#5b3a7a;border-radius:18px}
+  .a5 .nm{text-shadow:0 2px 0 rgba(255,255,255,.5)}
+  .a6{background:radial-gradient(ellipse at 20% 30%,#a78bfa,transparent 50%),radial-gradient(ellipse at 80% 70%,#60a5fa,transparent 50%),#0a0a0b;color:#fff}
+  .a7{background:#0a0014;color:#0ff;border:1px solid #ff00ff;font-family:'JetBrains Mono',monospace;text-shadow:0 0 8px #0ff}
+  .a7 .nm{color:#ff00ff;text-shadow:0 0 12px #ff00ff}
+  .a8{background:linear-gradient(135deg,#3a3a3a,#1a1a1a);color:#fff;box-shadow:inset 0 1px 2px rgba(255,255,255,.2),0 20px 40px rgba(0,0,0,.5)}
+  .a9{background:#ff3366;color:#fff;border:4px solid #00ff88}
+  .a10{background:#000;color:#d4af37;border:1px solid #d4af37}
+  .a10 .nm{background:linear-gradient(120deg,#d4af37,#f4e4a1,#d4af37);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .a11{background:linear-gradient(135deg,#8b5e3c,#d4a574);color:#fff;border-radius:24px 8px 24px 8px}
+
+  /* Brand chips for VoltAgent */
+  .brand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+  .brand{
+    background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:8px;
+    padding:10px 12px;font-size:13px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    transition:.2s;
+  }
+  .brand:hover{border-color:var(--accent);background:#16161c}
+  .brand .b-name{font-weight:600}
+  .brand .b-tag{font-size:10px;color:var(--text-mute);font-family:'JetBrains Mono',monospace}
+
+  /* Recommend table */
+  .rec{
+    margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  }
+  .rec table{width:100%;border-collapse:collapse;font-size:14px}
+  .rec th,.rec td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border-soft)}
+  .rec th{background:var(--bg-soft);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim)}
+  .rec tr:last-child td{border-bottom:none}
+  .rec td:first-child{font-weight:600;color:var(--accent-2)}
+  .rec .tick{color:var(--green);font-weight:700}
+
+  /* Footer */
+  footer{margin-top:100px;padding-top:32px;border-top:1px solid var(--border-soft);color:var(--text-mute);font-size:13px;font-family:'JetBrains Mono',monospace}
+  footer a{color:var(--text-dim);text-decoration:none}
+  footer a:hover{color:var(--accent-2)}
+
+  @media (max-width:640px){
+    .wrap{padding:40px 18px 80px}
+    .skill{padding:22px}
+    .section-head{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:20px;padding-bottom:14px}
+    .section-head h2{font-size:22px;word-break:keep-all}
+    h1{font-size:32px}
+    .lead{font-size:16px}
+    .skill h3{font-size:19px;word-break:keep-all}
+    .meta{flex-direction:column;gap:12px;padding:14px 16px}
+    .meta .item{flex-direction:row;align-items:baseline;gap:10px;justify-content:space-between}
+    .meta .v{font-size:14px}
+    .cases-title{margin:14px 0 10px}
+    .cases{grid-template-columns:1fr}
+    .case{padding:12px 14px}
+
+    /* 表格在移动端转卡片布局 */
+    .rec table,.rec thead,.rec tbody,.rec th,.rec td,.rec tr{display:block;width:100%}
+    .rec thead{display:none}
+    .rec tr{padding:16px 18px;border-bottom:1px solid var(--border-soft)}
+    .rec tr:last-child{border-bottom:none}
+    .rec td{padding:5px 0;border:none;font-size:14px;line-height:1.5}
+    .rec td::before{
+      content:attr(data-label);display:block;
+      font-size:10px;color:var(--text-mute);
+      text-transform:uppercase;letter-spacing:.08em;
+      font-family:'JetBrains Mono',monospace;margin-bottom:2px;
+    }
+    .rec td:first-child{font-size:16px;margin-bottom:4px;padding-top:0}
+    .rec td:first-child::before{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow"><span class="dot"></span>RESEARCH · 2026-05-16 · GITHUB SCAN</div>
+  <h1>Claude Code 上<br>真正能用的 <span class="grad">UI 设计 Skills</span></h1>
+  <p class="lead">
+    在 GitHub 上扫描了主要的 awesome list、官方仓库和社区 marketplace，筛出 <strong style="color:var(--text)">5 个</strong>专门服务 UI/UX 的 skill 或 skill 集合。每个都附了具体风格清单或品牌案例，方便你直接判断哪个能用。
+  </p>
+  <nav class="toc">
+    <a href="#s1">① Anthropic frontend-design（官方）</a>
+    <a href="#s2">② frontend-design-pro-demo（11 风格）</a>
+    <a href="#s3">③ awesome-claude-design（68 品牌）</a>
+    <a href="#s4">④ UI/UX Pro Max</a>
+    <a href="#s5">⑤ Vercel Web Design Guidelines</a>
+    <a href="#summary">推荐对比</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section id="s1">
+  <div class="section-head">
+    <h2>① Anthropic frontend-design</h2>
+    <div class="num">// 官方 · 已内置</div>
+  </div>
+  <article class="skill">
+    <div class="skill-head">
+      <h3>frontend-design <span class="badge official">OFFICIAL</span></h3>
+      <div class="links">
+        <a class="primary" href="https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design" target="_blank">↗ Repo</a>
+        <a href="https://github.com/anthropics/claude-cookbooks/blob/main/coding/prompting_for_frontend_aesthetics.ipynb" target="_blank">↗ Aesthetics Cookbook</a>
+      </div>
+    </div>
+    <p class="desc">Anthropic 官方出品。当你做前端时<strong>自动激活</strong>，目标是「避免通用 AI 美学」，输出生产级、有意图的设计代码（你机器上已经装了）。</p>
+
+    <div class="meta">
+      <div class="item"><span class="k">类型</span><span class="v">Plugin (含 Skill)</span></div>
+      <div class="item"><span class="k">触发</span><span class="v"><span class="accent">自动</span> · 任何前端任务</span></div>
+      <div class="item"><span class="k">技术栈</span><span class="v">React / HTML / Tailwind / shadcn</span></div>
+      <div class="item"><span class="k">维护</span><span class="v">Anthropic 官方</span></div>
+    </div>
+
+    <div class="cases-title">典型使用案例</div>
+    <div class="cases">
+      <div class="case"><div class="name"><span class="dot" style="background:var(--purple)"></span>音乐流媒体 Dashboard</div><div class="feat">"Create a dashboard for a music streaming app"</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--accent)"></span>AI 安全 Landing Page</div><div class="feat">"Build a landing page for an AI security startup"</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--blue)"></span>暗色模式设置面板</div><div class="feat">"Design a settings panel with dark mode"</div></div>
+    </div>
+  </article>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <div class="section-head">
+    <h2>② frontend-design-pro-demo</h2>
+    <div class="num">// 11 种美学风格 · 有 Live Demo</div>
+  </div>
+  <article class="skill">
+    <div class="skill-head">
+      <h3>claudekit/frontend-design-pro-demo <span class="badge community">DEMO 可看</span></h3>
+      <div class="links">
+        <a class="primary" href="https://github.com/claudekit/frontend-design-pro-demo" target="_blank">↗ Repo</a>
+        <a href="https://claudekit.github.io/frontend-design-pro-demo/" target="_blank">↗ Live Demo</a>
+      </div>
+    </div>
+    <p class="desc">把 11 种主流前端美学做成了<strong>独立 HTML demo</strong>，可以直接打开看。最适合<strong>「我不知道我想要什么风格」</strong>的时候——挑一个，把它的 DESIGN.md 喂给 Claude 就行。下面是真实色彩还原：</p>
+
+    <div class="cases-title">11 个美学风格预览（点 Live Demo 看效果）</div>
+    <div class="aes-grid">
+      <div class="aes a1"><span class="num">01</span><div><div class="nm">Swiss Minimalism</div><div class="ft">严格栅格 · 大字号 · 不对称杂志感</div></div></div>
+      <div class="aes a2"><span class="num">02</span><div><div class="nm">Neumorphism</div><div class="ft">挤压元素 · 多层阴影 · 按下按钮</div></div></div>
+      <div class="aes a3"><span class="num">03</span><div><div class="nm">Glassmorphism</div><div class="ft">网格渐变 · 毛玻璃卡 · backdrop-blur</div></div></div>
+      <div class="aes a4"><span class="num">04</span><div><div class="nm">Brutalism</div><div class="ft">3-4px 粗边 · 硬阴影 · 砌墙网格</div></div></div>
+      <div class="aes a5"><span class="num">05</span><div><div class="nm">Claymorphism</div><div class="ft">膨胀 3D 黏土 · 棉花糖形状 · 糖果色</div></div></div>
+      <div class="aes a6"><span class="num">06</span><div><div class="nm">Aurora / Mesh</div><div class="ft">慢速呼吸光斑 · 漂浮玻璃覆盖</div></div></div>
+      <div class="aes a7"><span class="num">07</span><div><div class="nm">Retro-Futurism</div><div class="ft">激进霓虹 · CRT 扫描线 · HUD 元素</div></div></div>
+      <div class="aes a8"><span class="num">08</span><div><div class="nm">3D Hyperrealism</div><div class="ft">真实纹理 · 电影级光照 · 物理动效</div></div></div>
+      <div class="aes a9"><span class="num">09</span><div><div class="nm">Vibrant Block</div><div class="ft">撞色 RGB 块 · 粗边框 · Snap 悬停</div></div></div>
+      <div class="aes a10"><span class="num">10</span><div><div class="nm">Dark OLED Luxury</div><div class="ft">绝对黑 + 金色 · 聚光鼠标 · 金箔渐变</div></div></div>
+      <div class="aes a11"><span class="num">11</span><div><div class="nm">Organic / Biomorphic</div><div class="ft">大地调色板 · 变形光斑 · 波浪分割</div></div></div>
+    </div>
+  </article>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <div class="section-head">
+    <h2>③ awesome-claude-design</h2>
+    <div class="num">// 68 个品牌设计系统</div>
+  </div>
+  <article class="skill">
+    <div class="skill-head">
+      <h3>VoltAgent/awesome-claude-design <span class="badge popular">最实用</span></h3>
+      <div class="links">
+        <a class="primary" href="https://github.com/VoltAgent/awesome-claude-design" target="_blank">↗ Repo</a>
+      </div>
+    </div>
+    <p class="desc">
+      <strong>这个最直接</strong>：68 个真实品牌的 DESIGN.md 文件，下载一个丢进项目，Claude 直接按那个品牌的设计语言写 UI。下面列出实际包含的品牌（节选）：
+    </p>
+
+    <div class="cases-title">AI / 开发工具品牌</div>
+    <div class="brand-grid">
+      <div class="brand"><span class="b-name">Claude</span><span class="b-tag">terracotta</span></div>
+      <div class="brand"><span class="b-name">Cursor</span><span class="b-tag">dark+gradient</span></div>
+      <div class="brand"><span class="b-name">Vercel</span><span class="b-tag">Geist mono</span></div>
+      <div class="brand"><span class="b-name">Raycast</span><span class="b-tag">obsidian gloss</span></div>
+      <div class="brand"><span class="b-name">Warp</span><span class="b-tag">block IDE</span></div>
+      <div class="brand"><span class="b-name">Superhuman</span><span class="b-tag">purple glow</span></div>
+      <div class="brand"><span class="b-name">ElevenLabs</span><span class="b-tag">audio waveform</span></div>
+      <div class="brand"><span class="b-name">Mistral AI</span><span class="b-tag">french minimal</span></div>
+    </div>
+
+    <div class="cases-title" style="margin-top:24px">设计 / 金融 / 电商品牌</div>
+    <div class="brand-grid">
+      <div class="brand"><span class="b-name">Figma</span><span class="b-tag">multi-color</span></div>
+      <div class="brand"><span class="b-name">Framer</span><span class="b-tag">motion-first</span></div>
+      <div class="brand"><span class="b-name">Stripe</span><span class="b-tag">purple gradient</span></div>
+      <div class="brand"><span class="b-name">Binance</span><span class="b-tag">trading yellow</span></div>
+      <div class="brand"><span class="b-name">Wise</span><span class="b-tag">bright green</span></div>
+      <div class="brand"><span class="b-name">Nike</span><span class="b-tag">monochrome Futura</span></div>
+      <div class="brand"><span class="b-name">Shopify</span><span class="b-tag">neon green</span></div>
+      <div class="brand"><span class="b-name">Airbnb</span><span class="b-tag">coral photo-led</span></div>
+    </div>
+
+    <div class="cases-title" style="margin-top:24px">媒体 / 汽车品牌</div>
+    <div class="brand-grid">
+      <div class="brand"><span class="b-name">Apple</span><span class="b-tag">SF Pro · whitespace</span></div>
+      <div class="brand"><span class="b-name">Spotify</span><span class="b-tag">vibrant dark</span></div>
+      <div class="brand"><span class="b-name">The Verge</span><span class="b-tag">acid mint+UV</span></div>
+      <div class="brand"><span class="b-name">Tesla</span><span class="b-tag">radical subtraction</span></div>
+      <div class="brand"><span class="b-name">Ferrari</span><span class="b-tag">B&amp;W + Rosso</span></div>
+      <div class="brand"><span class="b-name">Lamborghini</span><span class="b-tag">black + gold</span></div>
+    </div>
+    <p style="margin-top:20px;font-size:13px;color:var(--text-mute)">… 共 68 个品牌，每个都有可预览页面 <code style="color:var(--accent-2)">getdesign.md/[brand]/design-md</code></p>
+  </article>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <div class="section-head">
+    <h2>④ UI/UX Pro Max</h2>
+    <div class="num">// 67 风格 + 161 调色板 + 57 字体</div>
+  </div>
+  <article class="skill">
+    <div class="skill-head">
+      <h3>nextlevelbuilder/ui-ux-pro-max-skill <span class="badge popular">71k★</span></h3>
+      <div class="links">
+        <a class="primary" href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill" target="_blank">↗ Repo</a>
+      </div>
+    </div>
+    <p class="desc">据称社区最受欢迎的设计 skill。不是简单的提示模板，而是一个<strong>推理引擎</strong>——分析你的项目类型，自动选择风格 + 调色板 + 字体组合，输出完整设计系统。</p>
+
+    <div class="meta">
+      <div class="item"><span class="k">UI 风格</span><span class="v"><span class="accent">67</span> 种</span></div>
+      <div class="item"><span class="k">调色板</span><span class="v"><span class="accent">161</span> 个（按行业匹配）</span></div>
+      <div class="item"><span class="k">字体组合</span><span class="v"><span class="accent">57</span> 套（含 Google Fonts）</span></div>
+      <div class="item"><span class="k">推理规则</span><span class="v">161 条行业规则</span></div>
+      <div class="item"><span class="k">支持平台</span><span class="v">15 个（React / Next / Vue / SwiftUI / Flutter ...）</span></div>
+    </div>
+
+    <div class="cases-title">使用方式（CLI 安装）</div>
+    <div class="cases">
+      <div class="case"><div class="name"><span class="dot" style="background:var(--green)"></span>1. 全局安装</div><div class="feat" style="font-family:'JetBrains Mono',monospace">npm install -g uipro-cli</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--green)"></span>2. 注入到 Claude</div><div class="feat" style="font-family:'JetBrains Mono',monospace">uipro init --ai claude</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--green)"></span>3. 自然语言驱动</div><div class="feat">"为我的 SaaS 产品建立 landing page" → 自动生成完整设计系统 + 代码</div></div>
+    </div>
+  </article>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <div class="section-head">
+    <h2>⑤ Vercel Web Design Guidelines</h2>
+    <div class="num">// 不生成 · 只审计</div>
+  </div>
+  <article class="skill">
+    <div class="skill-head">
+      <h3>Vercel Web Design Guidelines <span class="badge community">AUDITOR</span></h3>
+      <div class="links">
+        <a class="primary" href="https://github.com/travisvn/awesome-claude-skills" target="_blank">↗ 在 awesome list 中</a>
+      </div>
+    </div>
+    <p class="desc">和上面四个不一样——它<strong>不生成 UI</strong>，而是用 100+ 条规则<strong>审计</strong>你（或 Claude）写出来的 UI，覆盖可访问性、性能、UX 一致性。Vercel 工程团队维护，每周 13.3 万次安装。</p>
+
+    <div class="cases-title">典型规则类别</div>
+    <div class="cases">
+      <div class="case"><div class="name"><span class="dot" style="background:var(--pink)"></span>Accessibility</div><div class="feat">对比度、focus ring、ARIA 标签、键盘可达性</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--blue)"></span>Performance</div><div class="feat">布局抖动、LCP 元素、字体加载、图片尺寸</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--purple)"></span>UX 一致性</div><div class="feat">触摸目标、loading 状态、错误处理、空状态</div></div>
+      <div class="case"><div class="name"><span class="dot" style="background:var(--green)"></span>跨工具</div><div class="feat">同时支持 Claude Code / Cursor / Codex / Copilot</div></div>
+    </div>
+  </article>
+</section>
+
+<!-- Summary -->
+<section id="summary">
+  <div class="section-head">
+    <h2>怎么选？</h2>
+    <div class="num">// 按场景</div>
+  </div>
+  <div class="rec">
+    <table>
+      <thead>
+        <tr><th>你的场景</th><th>推荐</th><th>原因</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="场景">已经在写前端</td>
+          <td data-label="推荐">frontend-design（官方）</td>
+          <td data-label="原因">已内置 · 自动触发 · 不用额外装</td>
+        </tr>
+        <tr>
+          <td data-label="场景">想模仿某个具体品牌</td>
+          <td data-label="推荐">VoltAgent/awesome-claude-design</td>
+          <td data-label="原因"><span class="tick">最直接</span> · 68 个真实品牌 DESIGN.md，拿来即用</td>
+        </tr>
+        <tr>
+          <td data-label="场景">不确定要什么风格</td>
+          <td data-label="推荐">frontend-design-pro-demo</td>
+          <td data-label="原因">11 种风格<span class="tick">有 Live Demo 可看</span>，先挑再用</td>
+        </tr>
+        <tr>
+          <td data-label="场景">要一键产出完整设计系统</td>
+          <td data-label="推荐">UI/UX Pro Max</td>
+          <td data-label="原因">风格+调色+字体组合自动决策，适合从 0 开始</td>
+        </tr>
+        <tr>
+          <td data-label="场景">检查 UI 质量 / 可访问性</td>
+          <td data-label="推荐">Vercel Web Design Guidelines</td>
+          <td data-label="原因">审计而非生成，和上面任一个配合用</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rec" style="margin-top:20px;padding:24px 28px">
+    <p style="color:var(--text);font-size:15px;line-height:1.7">
+      <strong style="color:var(--accent-2)">个人建议组合：</strong>
+      日常用<strong>官方 frontend-design</strong>（已内置）+ 需要明确品牌感时拉一份 <strong>VoltAgent</strong> 的 DESIGN.md 进项目 + 关键页面交付前跑一次 <strong>Vercel Guidelines</strong> 审计。这三个搭配覆盖 90% 的场景，不需要装 UI/UX Pro Max 那种重型工具。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <p>生成时间 2026-05-16 · 数据来源：GitHub Search · 文件路径 <code>/Users/ZHANGWENWEI/Documents/claude-code-ui-skills.html</code></p>
+  <p style="margin-top:8px">参考仓库：
+    <a href="https://github.com/travisvn/awesome-claude-skills" target="_blank">travisvn/awesome-claude-skills</a> ·
+    <a href="https://github.com/anthropics/claude-code" target="_blank">anthropics/claude-code</a> ·
+    <a href="https://claudemarketplaces.com/" target="_blank">claudemarketplaces.com</a>
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block Blast - Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    background: #0a0e27;
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* Tab 切换 */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 10px 18px;
+    background: #1a1f3a;
+    border: 1px solid #2a3157;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #aab;
+    transition: all 0.2s;
+  }
+  .tab:hover { background: #232a4d; }
+  .tab.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+
+  /* 手机外框 */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .phone {
+    width: 380px;
+    height: 760px;
+    background: linear-gradient(180deg, #0f1430 0%, #1a1f4a 100%);
+    border-radius: 36px;
+    border: 8px solid #1a1f3a;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(99, 102, 241, 0.15);
+    display: none;
+  }
+  .phone.active { display: block; }
+
+  .phone-label {
+    text-align: center;
+    margin-top: 12px;
+    color: #8b9bbb;
+    font-size: 13px;
+  }
+
+  /* ========== 通用组件 ========== */
+  .scene {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* HUD 顶栏 */
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 16px;
+  }
+  .hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hud-label {
+    font-size: 10px;
+    color: #8b9bbb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .hud-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+  }
+  .hud-value.gold { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.6); }
+  .hud-value.score { background: linear-gradient(135deg, #06b6d4, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* ========== 场景 1：主菜单 ========== */
+  .menu-logo {
+    text-align: center;
+    margin-top: 80px;
+    margin-bottom: 60px;
+  }
+  .menu-logo h1 {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+    letter-spacing: -1px;
+  }
+  .menu-logo p {
+    color: #8b9bbb;
+    font-size: 14px;
+    margin-top: 8px;
+    letter-spacing: 4px;
+  }
+  .menu-logo .demo-blocks {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 30px;
+  }
+  .menu-logo .demo-blocks .block-cell {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  .menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 20px;
+  }
+  .btn {
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-icon { font-size: 18px; }
+
+  .menu-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  /* ========== 场景 2：游戏中 ========== */
+  /* 棋盘 */
+  .board {
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 3px;
+    margin: 16px 0;
+    aspect-ratio: 1;
+  }
+  .cell {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+  }
+  .cell.filled {
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 8px currentColor;
+  }
+  .cell.preview {
+    background: rgba(255,255,255,0.15);
+    border: 1px dashed rgba(255,255,255,0.4);
+  }
+
+  /* 颜色 */
+  .c-cyan { background: #06b6d4; color: #06b6d4; }
+  .c-purple { background: #8b5cf6; color: #8b5cf6; }
+  .c-pink { background: #ec4899; color: #ec4899; }
+  .c-yellow { background: #fbbf24; color: #fbbf24; }
+  .c-green { background: #10b981; color: #10b981; }
+  .c-orange { background: #f97316; color: #f97316; }
+  .c-red { background: #ef4444; color: #ef4444; }
+
+  /* 待放置方块栏 */
+  .tray {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: auto;
+  }
+  .tray-block {
+    display: grid;
+    gap: 2px;
+  }
+  .tray-block .mini {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), 0 0 6px currentColor;
+  }
+
+  /* combo 提示 */
+  .combo-tag {
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.8);
+    animation: combo 2s infinite;
+  }
+  @keyframes combo {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+  }
+
+  /* ========== 场景 3：Game Over ========== */
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  .modal {
+    background: linear-gradient(180deg, #1a1f4a 0%, #0f1430 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 24px;
+    padding: 28px 24px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
+  }
+  .modal h2 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #ef4444, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .modal-sub {
+    color: #8b9bbb;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    padding: 14px;
+    border-radius: 12px;
+  }
+  .stat-card .stat-label {
+    font-size: 11px;
+    color: #8b9bbb;
+    text-transform: uppercase;
+  }
+  .stat-card .stat-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 4px;
+  }
+  .stat-card.highlight .stat-value {
+    background: linear-gradient(135deg, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .revive-btn {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    margin-bottom: 10px;
+    width: 100%;
+    position: relative;
+  }
+  .revive-btn::before {
+    content: '▶';
+    margin-right: 8px;
+  }
+  .revive-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+  }
+
+  /* ========== 场景 4：商店 ========== */
+  .shop-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .shop-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .gold-badge {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: #fbbf24;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .shop-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .shop-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    font-size: 13px;
+    color: #8b9bbb;
+    cursor: pointer;
+  }
+  .shop-tab.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+  }
+
+  .skin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  .skin-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+  }
+  .skin-card.owned {
+    border-color: #10b981;
+  }
+  .skin-card.equipped {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+  }
+  .skin-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-bottom: 10px;
+  }
+  .skin-preview .pcell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+  }
+  .skin-name {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .skin-price {
+    font-size: 12px;
+    color: #fbbf24;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+  .skin-status {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+  }
+  .skin-status.equipped { background: #fbbf24; color: #000; }
+  .skin-status.owned { background: #10b981; color: #fff; }
+  .lock-overlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.6);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .ad-unlock {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #06b6d4;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" onclick="showScene('menu')">📱 主菜单</div>
+  <div class="tab" onclick="showScene('game')">🎮 游戏中</div>
+  <div class="tab" onclick="showScene('over')">💀 Game Over</div>
+  <div class="tab" onclick="showScene('shop')">🛍️ 商店</div>
+  <div class="tab" onclick="showScene('all')">🖼️ 全部</div>
+</div>
+
+<div class="phone-wrap">
+
+  <!-- ========== 场景 1：主菜单 ========== -->
+  <div>
+    <div class="phone active" id="phone-menu">
+      <div class="scene">
+        <div class="menu-logo">
+          <h1>BLOCK<br>BLAST!</h1>
+          <p>P U Z Z L E</p>
+          <div class="demo-blocks">
+            <div class="block-cell c-cyan"></div>
+            <div class="block-cell c-purple"></div>
+            <div class="block-cell c-pink"></div>
+            <div class="block-cell c-yellow"></div>
+            <div class="block-cell c-green"></div>
+          </div>
+        </div>
+
+        <div class="menu-buttons">
+          <button class="btn btn-primary">
+            <span class="btn-icon">▶</span>开始游戏
+          </button>
+          <button class="btn btn-secondary">
+            <span class="btn-icon">📅</span>每日挑战
+          </button>
+          <button class="btn btn-secondary">
+            <span class="btn-icon">🛍️</span>商店
+          </button>
+        </div>
+
+        <div class="menu-footer">
+          <div class="icon-btn">🔊</div>
+          <div class="icon-btn">🌐</div>
+          <div class="icon-btn">🏆</div>
+          <div class="icon-btn">⚙️</div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">主菜单</div>
+  </div>
+
+  <!-- ========== 场景 2：游戏中 ========== -->
+  <div>
+    <div class="phone" id="phone-game">
+      <div class="scene">
+        <!-- HUD -->
+        <div class="hud">
+          <div class="hud-item">
+            <div class="hud-label">得分</div>
+            <div class="hud-value score">12,840</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">最高</div>
+            <div class="hud-value">28,750</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">💰</div>
+            <div class="hud-value gold">235</div>
+          </div>
+        </div>
+
+        <!-- 棋盘 -->
+        <div class="board" id="board"></div>
+
+        <!-- combo 提示 -->
+        <div class="combo-tag">⚡ COMBO x3 ⚡</div>
+
+        <!-- 待放置方块 -->
+        <div class="tray">
+          <!-- L 形 -->
+          <div class="tray-block" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="mini c-cyan"></div><div></div>
+            <div class="mini c-cyan"></div><div></div>
+            <div class="mini c-cyan"></div><div class="mini c-cyan"></div>
+          </div>
+          <!-- 田字 -->
+          <div class="tray-block" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="mini c-pink"></div><div class="mini c-pink"></div>
+            <div class="mini c-pink"></div><div class="mini c-pink"></div>
+          </div>
+          <!-- 长条 -->
+          <div class="tray-block" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="mini c-yellow"></div><div class="mini c-yellow"></div><div class="mini c-yellow"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">游戏中（含 combo 特效预览）</div>
+  </div>
+
+  <!-- ========== 场景 3：Game Over ========== -->
+  <div>
+    <div class="phone" id="phone-over">
+      <div class="scene">
+        <!-- 背景棋盘（虚化） -->
+        <div class="hud">
+          <div class="hud-item">
+            <div class="hud-label">得分</div>
+            <div class="hud-value score">12,840</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">最高</div>
+            <div class="hud-value">28,750</div>
+          </div>
+          <div class="hud-item">
+            <div class="hud-label">💰</div>
+            <div class="hud-value gold">235</div>
+          </div>
+        </div>
+        <div class="board" id="board-bg" style="opacity: 0.3;"></div>
+
+        <!-- 弹窗 -->
+        <div class="modal-overlay">
+          <div class="modal">
+            <h2>GAME OVER</h2>
+            <div class="modal-sub">没有可放置的位置了</div>
+
+            <div class="stats-grid">
+              <div class="stat-card highlight">
+                <div class="stat-label">本局得分</div>
+                <div class="stat-value">12,840</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">金币 +</div>
+                <div class="stat-value">128 💰</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">最高 combo</div>
+                <div class="stat-value">x5</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">消除行数</div>
+                <div class="stat-value">42</div>
+              </div>
+            </div>
+
+            <button class="btn revive-btn">
+              看广告复活
+              <span class="revive-badge">免费</span>
+            </button>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 8px;">再来一局</button>
+            <button class="btn btn-secondary" style="width: 100%;">返回主菜单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">Game Over（激励视频复活入口）</div>
+  </div>
+
+  <!-- ========== 场景 4：商店 ========== -->
+  <div>
+    <div class="phone" id="phone-shop">
+      <div class="scene">
+        <div class="shop-header">
+          <div class="back-btn">←</div>
+          <div class="shop-title">商店</div>
+          <div class="gold-badge">💰 235</div>
+        </div>
+
+        <div class="shop-tabs">
+          <div class="shop-tab active">皮肤</div>
+          <div class="shop-tab">道具</div>
+          <div class="shop-tab">主题</div>
+        </div>
+
+        <div class="skin-grid">
+          <!-- 默认 -->
+          <div class="skin-card equipped">
+            <div class="skin-preview">
+              <div class="pcell c-cyan"></div><div class="pcell c-purple"></div><div class="pcell c-pink"></div>
+              <div class="pcell c-yellow"></div><div class="pcell c-green"></div><div class="pcell c-orange"></div>
+              <div class="pcell c-red"></div><div class="pcell c-cyan"></div><div class="pcell c-purple"></div>
+            </div>
+            <div class="skin-name">霓虹</div>
+            <div class="skin-status equipped">使用中</div>
+          </div>
+
+          <!-- 糖果 -->
+          <div class="skin-card owned">
+            <div class="skin-preview">
+              <div class="pcell" style="background:#fda4af"></div>
+              <div class="pcell" style="background:#fcd34d"></div>
+              <div class="pcell" style="background:#a7f3d0"></div>
+              <div class="pcell" style="background:#bfdbfe"></div>
+              <div class="pcell" style="background:#ddd6fe"></div>
+              <div class="pcell" style="background:#fbcfe8"></div>
+              <div class="pcell" style="background:#fed7aa"></div>
+              <div class="pcell" style="background:#bbf7d0"></div>
+              <div class="pcell" style="background:#fde68a"></div>
+            </div>
+            <div class="skin-name">糖果</div>
+            <div class="skin-status owned">点击使用</div>
+          </div>
+
+          <!-- 像素 -->
+          <div class="skin-card">
+            <div class="lock-overlay">🔒</div>
+            <div class="skin-preview">
+              <div class="pcell" style="background:#22c55e"></div>
+              <div class="pcell" style="background:#facc15"></div>
+              <div class="pcell" style="background:#ef4444"></div>
+              <div class="pcell" style="background:#3b82f6"></div>
+              <div class="pcell" style="background:#a855f7"></div>
+              <div class="pcell" style="background:#f97316"></div>
+              <div class="pcell" style="background:#06b6d4"></div>
+              <div class="pcell" style="background:#84cc16"></div>
+              <div class="pcell" style="background:#ec4899"></div>
+            </div>
+            <div class="skin-name">复古像素</div>
+            <div class="skin-price">💰 500</div>
+            <div class="ad-unlock">📺 看广告解锁</div>
+          </div>
+
+          <!-- 暗夜 -->
+          <div class="skin-card">
+            <div class="lock-overlay">🔒</div>
+            <div class="skin-preview">
+              <div class="pcell" style="background:#1e293b"></div>
+              <div class="pcell" style="background:#334155"></div>
+              <div class="pcell" style="background:#475569"></div>
+              <div class="pcell" style="background:#64748b"></div>
+              <div class="pcell" style="background:#94a3b8"></div>
+              <div class="pcell" style="background:#cbd5e1"></div>
+              <div class="pcell" style="background:#e2e8f0"></div>
+              <div class="pcell" style="background:#f1f5f9"></div>
+              <div class="pcell" style="background:#f8fafc"></div>
+            </div>
+            <div class="skin-name">暗夜</div>
+            <div class="skin-price">💰 800</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-label">商店（皮肤系统）</div>
+  </div>
+
+</div>
+
+<script>
+  // 生成棋盘
+  function genBoard(id, withBlocks = true) {
+    const board = document.getElementById(id);
+    if (!board) return;
+    const colors = ['c-cyan', 'c-purple', 'c-pink', 'c-yellow', 'c-green', 'c-orange'];
+
+    // 预先布局：模拟一局进行中的状态
+    const layout = [
+      [0,0,1,1,0,0,0,0],
+      [0,0,1,0,0,2,2,0],
+      [3,0,1,0,0,2,2,0],
+      [3,0,0,0,4,0,0,0],
+      [3,3,0,0,4,4,4,0],
+      [0,5,5,0,0,0,0,6],
+      [0,5,0,0,0,6,6,6],
+      [7,7,7,0,0,0,0,6],
+    ];
+
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        if (withBlocks && layout[r][c] > 0) {
+          cell.classList.add('filled');
+          cell.classList.add(colors[(layout[r][c] - 1) % colors.length]);
+        }
+        // 预览 hint：第二行画一个虚线放置预览
+        if (withBlocks && r === 1 && (c === 3 || c === 4)) {
+          cell.classList.add('preview');
+        }
+        board.appendChild(cell);
+      }
+    }
+  }
+
+  genBoard('board');
+  genBoard('board-bg');
+
+  // 切换场景
+  function showScene(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+
+    const phones = ['menu', 'game', 'over', 'shop'];
+    if (name === 'all') {
+      phones.forEach(p => document.getElementById('phone-' + p).classList.add('active'));
+    } else {
+      phones.forEach(p => {
+        document.getElementById('phone-' + p).classList.toggle('active', p === name);
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
